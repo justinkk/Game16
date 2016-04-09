@@ -4,8 +4,8 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//"Constants" that can be changed in the editor
-	public int MAX_SPEED = 5;
-	public float ACCELERATION = 1.0f;
+	public int MAX_SPEED = 1;
+	public float ACCELERATION = 4.0f;
 	public float TRACTION = 2.0f;
 	public float INPUT_THRESHOLD = 0.3f; //Button pressed if axis > this threshold
 	private static float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
@@ -28,14 +28,14 @@ public class PlayerController : MonoBehaviour {
 	//Called once per physics step
 	void FixedUpdate() {
 		//Figure out which direction to travel in
-		float verticalInput = Input.GetAxis("Vertical");
-		float horizontalInput = Input.GetAxis("Horizontal");
-
+		float verticalInput = Input.GetAxis("Vertical"); //TODO: Replace Input.GetAxis with something better,
+		float horizontalInput = Input.GetAxis("Horizontal");  // and something that could work with multiple
+															  // controllers
 		Vector2 force = Vector2.zero;
 		if (verticalInput > INPUT_THRESHOLD) {
 			force += Vector2.up;
-			animator.SetBool("GoingUp", true);
-		} else if (verticalInput < -INPUT_THRESHOLD) {
+			animator.SetBool("GoingUp", true); //TODO: this probably belongs in Update() instead of FixedUpdate()
+		} else if (verticalInput < -INPUT_THRESHOLD) { // but it's a terrible animation anyway
 			force += Vector2.down;
 			animator.SetBool("GoingUp", false);
 		}
@@ -62,6 +62,13 @@ public class PlayerController : MonoBehaviour {
 			body.drag = 0;
 			force *= ACCELERATION;
 			body.AddForce(force);
+		}
+
+		//Handle top speed
+		Vector2 currVelocity = body.velocity;
+		if (currVelocity.magnitude > MAX_SPEED) { 
+			currVelocity.Normalize();
+			body.velocity = currVelocity * MAX_SPEED;
 		}
 	}
 	
