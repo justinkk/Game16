@@ -94,5 +94,31 @@ public class PlayerController : MonoBehaviour {
 	void Update() {
 		//int val = (int)Mathf.Floor(Random.Range(-10.0f, 10.0f));
 		//Debug.Log("level: " + val + ", stat computed: " + ComputeStat(MAX_SPEED, val));
+		print("Speed level" + speedLevel);
+		print("Accel level" + accelerationLevel);
+		print("Tract level" + tractionLevel);
+	}
+
+	/*
+	* Changes a stat of this player
+	* stat: the stat's name
+	* augmenting: true if increasing, false if decreasing
+	*/
+	public void ChangeStat(string stat, bool augmenting) {
+		//TODO: Make this good style instead of terrible
+		int change;
+		if (augmenting)
+			change = 1;
+		else
+			change = -1;
+
+		if (stat == "Speed") {
+			speedLevel += change;
+		} else if (stat == "Acceleration") {
+			accelerationLevel += change;
+		} else if (stat == "Traction") {
+			tractionLevel += change;
+		}
+
 	}
 }
