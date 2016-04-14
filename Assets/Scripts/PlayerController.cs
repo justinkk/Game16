@@ -14,9 +14,10 @@ public class PlayerController : MonoBehaviour {
 	//Instance variables and variables that behave like them
 	private Rigidbody2D body;
 	private Animator animator;
-	private int speedLevel;
+	private int[] statLevels;
+	/*private int speedLevel;
 	private int accelerationLevel;
-	private int tractionLevel;
+	private int tractionLevel;*/
 
 	//Returns whether the axis parameter is big enough to represent a button press
 	bool Pressed(float axis) {
@@ -37,9 +38,12 @@ public class PlayerController : MonoBehaviour {
 	void Start() {
 		body = gameObject.GetComponent<Rigidbody2D>();
 		animator = gameObject.GetComponent<Animator>();
-		speedLevel = 0;
+
+		//Inintialize stat levels, defaulting to 0
+		statLevels = new int[StatConstants.NUM_STATS];
+		/*speedLevel = 0;
 		accelerationLevel = 0;
-		tractionLevel = 0;
+		tractionLevel = 0;*/
 	}
 
 	//Called once per physics step
@@ -74,16 +78,16 @@ public class PlayerController : MonoBehaviour {
 		//Apply force
 		if (force == Vector2.zero) {
 			//Apply traction
-			body.drag = ComputeStat(TRACTION, tractionLevel);
+			body.drag = ComputeStat(TRACTION, statLevels[StatConstants.BRAKES]);
 		} else {
 			body.drag = 0;
-			force *= ComputeStat(ACCELERATION, accelerationLevel);
+			force *= ComputeStat(ACCELERATION, statLevels[StatConstants.ACCELERATION]);
 			body.AddForce(force);
 		}
 
 		//Handle top speed
 		Vector2 currVelocity = body.velocity;
-		float currMaxSpeed = ComputeStat(MAX_SPEED, speedLevel);
+		float currMaxSpeed = ComputeStat(MAX_SPEED, statLevels[StatConstants.SPEED]);
 		if (currVelocity.magnitude > currMaxSpeed) { 
 			currVelocity.Normalize();
 			body.velocity = currVelocity * currMaxSpeed;
@@ -94,9 +98,9 @@ public class PlayerController : MonoBehaviour {
 	void Update() {
 		//int val = (int)Mathf.Floor(Random.Range(-10.0f, 10.0f));
 		//Debug.Log("level: " + val + ", stat computed: " + ComputeStat(MAX_SPEED, val));
-		print("Speed level" + speedLevel);
-		print("Accel level" + accelerationLevel);
-		print("Tract level" + tractionLevel);
+		print("Speed level" + statLevels[StatConstants.SPEED]);
+		print("Accel level" + statLevels[StatConstants.ACCELERATION]);
+		print("Brake level" + statLevels[StatConstants.BRAKES]);
 	}
 
 	/*
@@ -104,9 +108,12 @@ public class PlayerController : MonoBehaviour {
 	* stat: the stat's name
 	* augmenting: true if increasing, false if decreasing
 	*/
-	public void ChangeStat(string stat, bool augmenting) {
+	public void ChangeStat(int stat, bool augmenting) {
+		int change = augmenting ? 1 : -1;
+		statLevels[stat] += change;
 		//TODO: Make this good style instead of terrible
-		int change;
+		/*
+		int change; 
 		if (augmenting)
 			change = 1;
 		else
@@ -119,6 +126,6 @@ public class PlayerController : MonoBehaviour {
 		} else if (stat == "Traction") {
 			tractionLevel += change;
 		}
-
+		*/
 	}
 }

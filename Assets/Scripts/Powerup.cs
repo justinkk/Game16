@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Powerup : MonoBehaviour {
-	public string type;
+	public int type;
 	public bool augmenting;
 
 	//If a player enters my hitbox, delete me
