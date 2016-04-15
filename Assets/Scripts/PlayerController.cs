@@ -61,8 +61,8 @@ public class PlayerController : MonoBehaviour {
 	//Called once per physics step
 	void FixedUpdate() {
 		//Figure out which direction to travel in
-		float verticalInput = Input.GetAxis("Vertical"); //TODO: Replace Input.GetAxis with something better,
-		float horizontalInput = Input.GetAxis("Horizontal");  // and something that could work with multiple
+		float verticalInput = Input.GetAxisRaw("Vertical"); //TODO: Replace Input.GetAxisRaw with something better,
+		float horizontalInput = Input.GetAxisRaw("Horizontal");  // and something that could work with multiple
 															  // controllers
 		Vector2 force = Vector2.zero;
 		if (verticalInput > INPUT_THRESHOLD) {
