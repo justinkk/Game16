@@ -3,21 +3,21 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-	//"Constants" that can be changed in the editor
-	public int MAX_SPEED;
-	public float ACCELERATION;
-	public float TRACTION;
-	public float INPUT_THRESHOLD = 0.3f; //Button pressed if axis > this threshold
-	public float PERCENT_PER_LEVEL = 0.1f; //How much a stat changes per stat level
-	private static float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
+	//Constants
+	private static readonly float[] DEFAULT_STATS = {5, 10, 2}; //Default base stats
+	//public int MAX_SPEED;
+	//public float ACCELERATION;
+	//public float TRACTION;
+	public static float INPUT_THRESHOLD = 0.3f; //Button pressed if axis > this threshold
+	//public float PERCENT_PER_LEVEL = 0.1f; //How much a stat changes per stat level
+	private static readonly float[] BOOST_PER_STAT = {0.1f, 0.1f, 0.1f}; //How much each stat changes per stat level
+	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
 
-	//Instance variables and variables that behave like them
+	//Instance variables
 	private Rigidbody2D body;
 	private Animator animator;
-	private int[] statLevels;
-	/*private int speedLevel;
-	private int accelerationLevel;
-	private int tractionLevel;*/
+	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
+	private int[] statLevels; 
 
 	//Returns whether the axis parameter is big enough to represent a button press
 	bool Pressed(float axis) {
@@ -25,6 +25,18 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	//Gives current value of a stat, given base value and current level
+	private float ComputeStat(int statNum) {
+		int statLevel = statLevels[statNum];
+		float baseStat = baseStats[statNum];
+		float percentChange = BOOST_PER_STAT[statNum];
+		if (statLevel > 0) 
+			return baseStat * (1.0f + percentChange * statLevel);
+		else if (statLevel < 0)
+			return baseStat * (Mathf.Pow(1.0f - percentChange, -statLevel));
+		else
+			return baseStat;
+	}	
+	/*
 	private float ComputeStat(float baseStat, int statLevel) {
 		if (statLevel > 0) 
 			return baseStat * (1.0f + PERCENT_PER_LEVEL * statLevel);
@@ -33,6 +45,7 @@ public class PlayerController : MonoBehaviour {
 		else
 			return baseStat;
 	}
+	*/
 
 	//Called on the object's creation
 	void Start() {
@@ -41,9 +54,8 @@ public class PlayerController : MonoBehaviour {
 
 		//Inintialize stat levels, defaulting to 0
 		statLevels = new int[StatConstants.NUM_STATS];
-		/*speedLevel = 0;
-		accelerationLevel = 0;
-		tractionLevel = 0;*/
+		//Initiate base stats
+		baseStats = (float[])DEFAULT_STATS.Clone();
 	}
 
 	//Called once per physics step
@@ -77,17 +89,17 @@ public class PlayerController : MonoBehaviour {
 		
 		//Apply force
 		if (force == Vector2.zero) {
-			//Apply traction
-			body.drag = ComputeStat(TRACTION, statLevels[StatConstants.BRAKES]);
+			//Apply brakes
+			body.drag = ComputeStat(StatConstants.BRAKES);
 		} else {
 			body.drag = 0;
-			force *= ComputeStat(ACCELERATION, statLevels[StatConstants.ACCELERATION]);
+			force *= ComputeStat(StatConstants.ACCELERATION);
 			body.AddForce(force);
 		}
 
 		//Handle top speed
 		Vector2 currVelocity = body.velocity;
-		float currMaxSpeed = ComputeStat(MAX_SPEED, statLevels[StatConstants.SPEED]);
+		float currMaxSpeed = ComputeStat(StatConstants.SPEED);
 		if (currVelocity.magnitude > currMaxSpeed) { 
 			currVelocity.Normalize();
 			body.velocity = currVelocity * currMaxSpeed;
@@ -101,6 +113,11 @@ public class PlayerController : MonoBehaviour {
 		print("Speed level" + statLevels[StatConstants.SPEED]);
 		print("Accel level" + statLevels[StatConstants.ACCELERATION]);
 		print("Brake level" + statLevels[StatConstants.BRAKES]);
+
+
+		print("Speed" + ComputeStat(StatConstants.SPEED));
+		print("Accel" + ComputeStat(StatConstants.ACCELERATION));
+		print("Brake" + ComputeStat(StatConstants.BRAKES));
 	}
 
 	/*
