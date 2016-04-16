@@ -28,10 +28,13 @@ public class PlayerController : MonoBehaviour {
 	/**
 	 * Returns what percent charged you are
 	 * Maximum of 100%
-	 * Only call when you're currently charging
+	 * Zero when not currently charging
 	 */
 	private float ChargePercent() {
-		return Mathf.Min((Time.time - chargeStart) * ComputeStat(StatConstants.BRAKES), 1.0f);
+		if (charging)
+			return Mathf.Min((Time.time - chargeStart) * ComputeStat(StatConstants.BRAKES), 1.0f);
+		else 
+			return 0;
 	}
 
 	//Returns whether the axis parameter is big enough to represent a button press
@@ -54,9 +57,9 @@ public class PlayerController : MonoBehaviour {
 
 	//Computes the current drag coefficient, assuming quadratic drag
 	private float DragCoefficient() {
-		return (ComputeStat(StatConstants.ACCELERATION) / (ComputeStat(StatConstants.SPEED)) 
+		return (1.0f / (1.0f - Mathf.Min(ChargePercent(), 0.9999f))) *
+			(ComputeStat(StatConstants.ACCELERATION) / (ComputeStat(StatConstants.SPEED)) 
 			/ ComputeStat(StatConstants.SPEED));
-
 	}
 
 	/*
