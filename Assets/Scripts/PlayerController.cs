@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-	private static readonly float[] DEFAULT_STATS = {5, 10, 1.2f, 30}; //Default base stats
+	private static readonly float[] DEFAULT_STATS = {5, 10, 1.2f, 40}; //Default base stats
 	public const float INPUT_THRESHOLD = 0.1f; //Button pressed if axis > this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.1f, 0.1f, 0.1f}; //How much each stat changes per stat level
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
@@ -116,7 +116,6 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
-		Debug.Log(charging);
 		//Record when you started charging boost
 		if (Input.GetKeyDown("space")) {
 			charging = true;
@@ -125,7 +124,6 @@ public class PlayerController : MonoBehaviour {
 		}
 		//Apply a boost
 		if (Input.GetKeyUp("space")) {
-			Debug.Log(InputVector());
 			body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
 			charging = false;
 		}
