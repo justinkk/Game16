@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour {
 
 	//Constants
 	private static readonly float[] DEFAULT_STATS = {5, 10, 1.2f, 30}; //Default base stats
-	public static float INPUT_THRESHOLD = 0.1f; //Button pressed if axis > this threshold
+	public const float INPUT_THRESHOLD = 0.1f; //Button pressed if axis > this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.1f, 0.1f, 0.1f}; //How much each stat changes per stat level
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
 
@@ -57,8 +57,7 @@ public class PlayerController : MonoBehaviour {
 
 	//Computes the current drag coefficient, assuming quadratic drag
 	private float DragCoefficient() {
-		return (1.0f / (1.0f - Mathf.Min(ChargePercent(), 0.9999f))) *
-			(ComputeStat(StatConstants.ACCELERATION) / (ComputeStat(StatConstants.SPEED)) 
+		return (ComputeStat(StatConstants.ACCELERATION) / (ComputeStat(StatConstants.SPEED)) 
 			/ ComputeStat(StatConstants.SPEED));
 	}
 
@@ -104,7 +103,7 @@ public class PlayerController : MonoBehaviour {
 			body.drag = ComputeStat(StatConstants.BRAKES);
 		} else {
 			body.drag = 0;
-			force *= ComputeStat(StatConstants.ACCELERATION);
+			force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
 			body.AddForce(force);
 		}
 
@@ -126,9 +125,9 @@ public class PlayerController : MonoBehaviour {
 		}
 		//Apply a boost
 		if (Input.GetKeyUp("space")) {
-			charging = false;
 			Debug.Log(InputVector());
 			body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
+			charging = false;
 		}
 	}
 
