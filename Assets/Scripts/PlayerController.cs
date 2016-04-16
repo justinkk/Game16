@@ -4,13 +4,13 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-	private static readonly float[] DEFAULT_STATS = {5, 10, 2}; //Default base stats
+	private static readonly float[] DEFAULT_STATS = {5, 10, 1.2f}; //Default base stats
 	//public int MAX_SPEED;
 	//public float ACCELERATION;
 	//public float TRACTION;
-	public static float INPUT_THRESHOLD = 0.3f; //Button pressed if axis > this threshold
+	public static float INPUT_THRESHOLD = 0.1f; //Button pressed if axis > this threshold
 	//public float PERCENT_PER_LEVEL = 0.1f; //How much a stat changes per stat level
-	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.05f, 0.1f}; //How much each stat changes per stat level
+	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.1f, 0.1f}; //How much each stat changes per stat level
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
 
 	//Instance variables
@@ -18,6 +18,13 @@ public class PlayerController : MonoBehaviour {
 	private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
 	private int[] statLevels; 
+	//The time at which player started charging/boosting
+	private float chargeStart; 
+	private float boostStart;
+	//For keeping track of boost effect; default to false
+	private bool charging;
+	private bool boosting;
+	//Boost stat for percent per second how quickly your boost runs out
 
 	//Returns whether the axis parameter is big enough to represent a button press
 	bool Pressed(float axis) {
@@ -35,17 +42,14 @@ public class PlayerController : MonoBehaviour {
 			return baseStat * (Mathf.Pow(1.0f - percentChange, -statLevel));
 		else
 			return baseStat;
-	}	
-	/*
-	private float ComputeStat(float baseStat, int statLevel) {
-		if (statLevel > 0) 
-			return baseStat * (1.0f + PERCENT_PER_LEVEL * statLevel);
-		else if (statLevel < 0)
-			return baseStat * (Mathf.Pow(1.0f - PERCENT_PER_LEVEL, -statLevel));
-		else
-			return baseStat;
 	}
-	*/
+
+	//Computes the current drag coefficient, assuming quadratic drag
+	private float DragCoefficient() {
+		return (ComputeStat(StatConstants.ACCELERATION) / (ComputeStat(StatConstants.SPEED)) 
+			/ ComputeStat(StatConstants.SPEED));
+
+	}
 
 	//Called on the object's creation
 	void Start() {
@@ -100,24 +104,33 @@ public class PlayerController : MonoBehaviour {
 		//Handle top speed
 		Vector2 currVelocity = body.velocity;
 		float currMaxSpeed = ComputeStat(StatConstants.SPEED);
-		if (currVelocity.magnitude > currMaxSpeed) { 
+		//if (currVelocity.magnitude > currMaxSpeed) {
+		float magnitude = currVelocity.magnitude;
+		currVelocity.Normalize();
+		body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient());
+			//body.AddForce(-currVelocity * magnitude * 1.15f);
+			/*
 			currVelocity.Normalize();
 			body.velocity = currVelocity * currMaxSpeed;
-		}
+			*/
+		//}
 	}
 	
 	// Update is called once per frame
 	void Update() {
-		//int val = (int)Mathf.Floor(Random.Range(-10.0f, 10.0f));
-		//Debug.Log("level: " + val + ", stat computed: " + ComputeStat(MAX_SPEED, val));
-		print("Speed level" + statLevels[StatConstants.SPEED]);
-		print("Accel level" + statLevels[StatConstants.ACCELERATION]);
-		print("Brake level" + statLevels[StatConstants.BRAKES]);
-
-
-		print("Speed" + ComputeStat(StatConstants.SPEED));
-		print("Accel" + ComputeStat(StatConstants.ACCELERATION));
-		print("Brake" + ComputeStat(StatConstants.BRAKES));
+		Debug.Log(body.velocity);
+		//Record when you started charging boost
+		if (Input.GetKeyDown("space")) {
+			charging = true;
+			boosting = false;
+			chargeStart = Time.time;
+		}
+		//Record when you started boosting
+		if (Input.GetKeyUp("space")) {
+			charging = false;
+			boosting = true;
+			boostStart = Time.time;
+		}
 	}
 
 	/*
@@ -128,21 +141,5 @@ public class PlayerController : MonoBehaviour {
 	public void ChangeStat(int stat, bool augmenting) {
 		int change = augmenting ? 1 : -1;
 		statLevels[stat] += change;
-		//TODO: Make this good style instead of terrible
-		/*
-		int change; 
-		if (augmenting)
-			change = 1;
-		else
-			change = -1;
-
-		if (stat == "Speed") {
-			speedLevel += change;
-		} else if (stat == "Acceleration") {
-			accelerationLevel += change;
-		} else if (stat == "Traction") {
-			tractionLevel += change;
-		}
-		*/
 	}
 }
