@@ -59,6 +59,24 @@ public class PlayerController : MonoBehaviour {
 
 	}
 
+	/*
+	 * Gets input, normalizes if necessary
+	 * Returns 0 if within deadzone
+	 */
+	private Vector2 InputVector() {
+		//Figure out which direction to travel in
+		Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (input.magnitude < INPUT_THRESHOLD)
+			input = Vector2.zero;
+
+		if (Pressed(input.x) && Pressed(input.y)) {
+			//Diagonal: normalize the movement speed
+			input *= ONE_OVER_ROOT_TWO;	//TODO: Only applies to keyboard movement, make sure you're on keyboard
+		} 
+
+		return input;
+	}
+
 	//Called on the object's creation
 	void Start() {
 		body = gameObject.GetComponent<Rigidbody2D>();
@@ -76,29 +94,7 @@ public class PlayerController : MonoBehaviour {
 		float verticalInput = Input.GetAxisRaw("Vertical"); //TODO: Replace Input.GetAxisRaw with something better,
 		float horizontalInput = Input.GetAxisRaw("Horizontal");  // and something that could work with multiple
 															  // controllers
-		Vector2 force = Vector2.zero;
-		if (verticalInput > INPUT_THRESHOLD) {
-			force += Vector2.up;			   //TODO: consider analog input?
-			animator.SetBool("GoingUp", true); //TODO: this probably belongs in Update() instead of FixedUpdate()
-		} else if (verticalInput < -INPUT_THRESHOLD) { // but it's a terrible animation anyway
-			force += Vector2.down;
-			animator.SetBool("GoingUp", false);
-		}
-		if (horizontalInput > INPUT_THRESHOLD) {
-			force += Vector2.right;
-			animator.SetBool("GoingRight", true);
-		} else if (horizontalInput < -INPUT_THRESHOLD) {
-			force += Vector2.left;
-			animator.SetBool("GoingRight", false);
-		}
-
-		if (Pressed(verticalInput) && Pressed(horizontalInput)) {
-			//Diagonal: normalize the movement speed
-			force *= ONE_OVER_ROOT_TWO;	
-		} 
-
-		animator.SetBool("VerticalFasterThanHorizontal", Mathf.Abs(force.y) > Mathf.Abs(force.x));
-		
+		Vector2 force = InputVector();
 		//Apply force
 		if (force == Vector2.zero) {
 			//Apply brakes with linear drag
@@ -128,34 +124,8 @@ public class PlayerController : MonoBehaviour {
 		//Apply a boost
 		if (Input.GetKeyUp("space")) {
 			charging = false;
-			//boosting = true;
-			//boostStart = Time.time;
-			//Figure out which direction to travel in
-			float verticalInput = Input.GetAxisRaw("Vertical"); //TODO: Replace Input.GetAxisRaw with something better,
-			float horizontalInput = Input.GetAxisRaw("Horizontal");  // and something that could work with multiple
-																  // controllers
-			Vector2 force = Vector2.zero;
-			if (verticalInput > INPUT_THRESHOLD) {
-				force += Vector2.up;			   //TODO: consider analog input?
-				animator.SetBool("GoingUp", true); //TODO: this probably belongs in Update() instead of FixedUpdate()
-			} else if (verticalInput < -INPUT_THRESHOLD) { // but it's a terrible animation anyway
-				force += Vector2.down;
-				animator.SetBool("GoingUp", false);
-			}
-			if (horizontalInput > INPUT_THRESHOLD) {
-				force += Vector2.right;
-				animator.SetBool("GoingRight", true);
-			} else if (horizontalInput < -INPUT_THRESHOLD) {
-				force += Vector2.left;
-				animator.SetBool("GoingRight", false);
-			}
-
-			if (Pressed(verticalInput) && Pressed(horizontalInput)) {
-				//Diagonal: normalize the movement speed
-				force *= ONE_OVER_ROOT_TWO;	
-			} 
-
-			body.AddForce(force * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
+			Debug.Log(InputVector());
+			body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
 		}
 	}
 
