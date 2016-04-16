@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour {
 	//public float TRACTION;
 	public static float INPUT_THRESHOLD = 0.3f; //Button pressed if axis > this threshold
 	//public float PERCENT_PER_LEVEL = 0.1f; //How much a stat changes per stat level
-	private static readonly float[] BOOST_PER_STAT = {0.1f, 0.1f, 0.1f}; //How much each stat changes per stat level
+	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.05f, 0.1f}; //How much each stat changes per stat level
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
 
 	//Instance variables
