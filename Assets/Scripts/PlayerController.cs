@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-	private static readonly float[] DEFAULT_STATS = {5, 10, 2}; //Default base stats
+
+	// Set in editor. Determines which controller to use.
+	public int index = 0;
+
+    private static readonly float[] DEFAULT_STATS = {5, 10, 2}; //Default base stats
 	//public int MAX_SPEED;
 	//public float ACCELERATION;
 	//public float TRACTION;
@@ -17,7 +22,7 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody2D body;
 	private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
-	private int[] statLevels; 
+	private int[] statLevels;
 
 	//Returns whether the axis parameter is big enough to represent a button press
 	bool Pressed(float axis) {
@@ -56,14 +61,20 @@ public class PlayerController : MonoBehaviour {
 		statLevels = new int[StatConstants.NUM_STATS];
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
-	}
+    }
 
 	//Called once per physics step
 	void FixedUpdate() {
-		//Figure out which direction to travel in
-		float verticalInput = Input.GetAxisRaw("Vertical"); //TODO: Replace Input.GetAxisRaw with something better,
-		float horizontalInput = Input.GetAxisRaw("Horizontal");  // and something that could work with multiple
-															  // controllers
+
+        //Figure out which direction to travel in
+        float verticalInput = Input.GetAxisRaw("Y" + index);
+        float horizontalInput = Input.GetAxisRaw("X" + index);
+
+        if (index == 1) {
+            verticalInput += Input.GetAxisRaw("Y1 Alt");
+            horizontalInput += Input.GetAxisRaw("X1 Alt");
+        }
+
 		Vector2 force = Vector2.zero;
 		if (verticalInput > INPUT_THRESHOLD) {
 			force += Vector2.up;			   //TODO: consider analog input?
