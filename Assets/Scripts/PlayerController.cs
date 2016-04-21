@@ -98,13 +98,14 @@ public class PlayerController : MonoBehaviour {
 															  // controllers
 		Vector2 force = InputVector();
 		//Apply force
-		if (force == Vector2.zero) {
-			//Apply brakes with linear drag
-			body.drag = ComputeStat(StatConstants.BRAKES);
-		} else {
+		if (force != Vector2.zero) {
 			body.drag = 0;
 			force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
 			body.AddForce(force);
+		}
+		if (force == Vector2.zero || charging) {
+			//Apply brakes with linear drag
+			body.drag = ComputeStat(StatConstants.BRAKES);
 		}
 
 		//Handle top speed with quadratic drag
