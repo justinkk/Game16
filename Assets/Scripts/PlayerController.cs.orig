@@ -1,17 +1,27 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
 	//Constants
+<<<<<<< HEAD
+	private static readonly float[] DEFAULT_STATS = {5, 10, 1.2f, 40}; //Default base stats
+	public const float INPUT_THRESHOLD = 0.1f; //Button pressed if axis > this threshold
+	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.1f, 0.1f, 0.1f}; //How much each stat changes per stat level
+=======
 
 	// Set in editor. Determines which controller to use.
 	public int index = 0;
 
-   private static readonly float[] DEFAULT_STATS = {5, 10, 2, 30}; //Default base stats
-	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
-	public const float INPUT_THRESHOLD_HIGH = 0.8f; //Key pressed if axis > this threshold
-	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
+    private static readonly float[] DEFAULT_STATS = {5, 10, 2}; //Default base stats
+	//public int MAX_SPEED;
+	//public float ACCELERATION;
+	//public float TRACTION;
+	public static float INPUT_THRESHOLD = 0.3f; //Button pressed if axis > this threshold
+	//public float PERCENT_PER_LEVEL = 0.1f; //How much a stat changes per stat level
+	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.05f, 0.1f}; //How much each stat changes per stat level
+>>>>>>> 107067a60f18dc1321f302c5b6ee3c042c3c01be
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
 
 	//Brakes stat computes drag amount
@@ -22,11 +32,15 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody2D body;
 	private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
-	private int[] statLevels;
-
-	private bool charging = false;
-	private float chargeStart;
-
+<<<<<<< HEAD
+	private int[] statLevels; 
+	//The time at which player started charging/boosting
+	private float chargeStart; 
+	//private float boostStart;
+	//For keeping track of boost effect; default to false
+	private bool charging;
+	//private bool boosting;
+	
 	/**
 	 * Returns what percent charged you are
 	 * Maximum of 100%
@@ -38,10 +52,13 @@ public class PlayerController : MonoBehaviour {
 		else 
 			return 0;
 	}
+=======
+	private int[] statLevels;
+>>>>>>> 107067a60f18dc1321f302c5b6ee3c042c3c01be
 
 	//Returns whether the axis parameter is big enough to represent a button press
 	private bool Pressed(float axis) {
-		return Mathf.Abs(axis) > INPUT_THRESHOLD_HIGH;
+		return Mathf.Abs(axis) > INPUT_THRESHOLD;
 	}
 
 	//Gives current value of a stat, given base value and current level
@@ -68,14 +85,9 @@ public class PlayerController : MonoBehaviour {
 	 * Returns 0 if within deadzone
 	 */
 	private Vector2 InputVector() {
-		//Figure out which direction to travel in  
-		Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
-		if (index == 1) {
-      	input.x += Input.GetAxisRaw("X1 Alt");
-      	input.y += Input.GetAxisRaw("Y1 Alt");
-   	}
-
-		if (input.magnitude < INPUT_THRESHOLD_LOW)
+		//Figure out which direction to travel in
+		Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (input.magnitude < INPUT_THRESHOLD)
 			input = Vector2.zero;
 
 		if (Pressed(input.x) && Pressed(input.y)) {
@@ -95,12 +107,51 @@ public class PlayerController : MonoBehaviour {
 		statLevels = new int[StatConstants.NUM_STATS];
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
-   }
+    }
 
 	//Called once per physics step
 	void FixedUpdate() {
+<<<<<<< HEAD
+		//Figure out which direction to travel in
+		float verticalInput = Input.GetAxisRaw("Vertical"); //TODO: Replace Input.GetAxisRaw with something better,
+		float horizontalInput = Input.GetAxisRaw("Horizontal");  // and something that could work with multiple
+															  // controllers
 		Vector2 force = InputVector();
+=======
+
+        //Figure out which direction to travel in
+        float verticalInput = Input.GetAxisRaw("Y" + index);
+        float horizontalInput = Input.GetAxisRaw("X" + index);
+
+        if (index == 1) {
+            verticalInput += Input.GetAxisRaw("Y1 Alt");
+            horizontalInput += Input.GetAxisRaw("X1 Alt");
+        }
+
+		Vector2 force = Vector2.zero;
+		if (verticalInput > INPUT_THRESHOLD) {
+			force += Vector2.up;			   //TODO: consider analog input?
+			animator.SetBool("GoingUp", true); //TODO: this probably belongs in Update() instead of FixedUpdate()
+		} else if (verticalInput < -INPUT_THRESHOLD) { // but it's a terrible animation anyway
+			force += Vector2.down;
+			animator.SetBool("GoingUp", false);
+		}
+		if (horizontalInput > INPUT_THRESHOLD) {
+			force += Vector2.right;
+			animator.SetBool("GoingRight", true);
+		} else if (horizontalInput < -INPUT_THRESHOLD) {
+			force += Vector2.left;
+			animator.SetBool("GoingRight", false);
+		}
+
+		if (Pressed(verticalInput) && Pressed(horizontalInput)) {
+			//Diagonal: normalize the movement speed
+			force *= ONE_OVER_ROOT_TWO;	
+		} 
+
+		animator.SetBool("VerticalFasterThanHorizontal", Mathf.Abs(force.y) > Mathf.Abs(force.x));
 		
+>>>>>>> 107067a60f18dc1321f302c5b6ee3c042c3c01be
 		//Apply force
 		if (force != Vector2.zero) {
 			body.drag = 0;
@@ -124,6 +175,7 @@ public class PlayerController : MonoBehaviour {
 		//Record when you started charging boost
 		if (Input.GetKeyDown("space")) {
 			charging = true;
+			//boosting = false;
 			chargeStart = Time.time;
 		}
 		//Apply a boost
