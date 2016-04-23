@@ -13,15 +13,15 @@ public class PlayerController : MonoBehaviour {
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	public const float INPUT_THRESHOLD_HIGH = 0.8f; //Key pressed if axis > this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
+
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
+	private const int DEGREES_IN_CIRCLE = 360;
 
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
 	public const float BRAKES_TO_CHARGE_SPEED = 0.8f;
 	//How much angular velocity should be applied, based on degrees you're off
-	//public const float DEGREES_TO_TORQUE = 0.03f;
-	//public const float MAX_ANGULAR_VELOCITY = 360;
-	public const float OFFSET_TO_ANGULAR_VELOCITY = 1440.0f;
+	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
 	//Instance variables
 	private Rigidbody2D body;
@@ -107,20 +107,16 @@ public class PlayerController : MonoBehaviour {
 		if (desiredDirection != Vector2.zero) {
 			float angle = Vector2.Angle(Vector2.up, desiredDirection);
 			if (desiredDirection.x > 0)
-				angle = 360 - angle;
-			float angleDifference = angle - transform.eulerAngles.z;
-			if (angleDifference < -180)
-				angleDifference += 360;
-			else if (angleDifference > 180)
-				angleDifference -= 360;
+				angle = DEGREES_IN_CIRCLE - angle;
 
-			print(desiredDirection + ", " + angle + ", " + angleDifference);
+			float angleDifference = angle - transform.eulerAngles.z;
+			if (angleDifference < -DEGREES_IN_CIRCLE / 2)
+				angleDifference += DEGREES_IN_CIRCLE;
+			else if (angleDifference > DEGREES_IN_CIRCLE / 2)
+				angleDifference -= DEGREES_IN_CIRCLE;
 
 			//Quickly go, faster for a bigger angle difference. Biggest when difference is 180
-			body.angularVelocity = OFFSET_TO_ANGULAR_VELOCITY * Mathf.Sin(Mathf.PI * angleDifference / 720);
-			//body.AddTorque(angleDifference * DEGREES_TO_TORQUE);
-			//body.angularVelocity = Mathf.Clamp(body.angularVelocity, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
-			//transform.eulerAngles = new Vector3(0, 0, angle);
+			body.angularVelocity = OFFSET_TO_ANGULAR_VELOCITY * Mathf.Sin(Mathf.PI * angleDifference / (DEGREES_IN_CIRCLE * 2));
 		}
 	}
 
