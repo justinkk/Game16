@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour {
 
 	//Instance variables
 	private Rigidbody2D body;
-	private Animator animator;
+	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
 	private int[] statLevels;
 
@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour {
 
 	// Set in editor. Determines which controller to use.
 	public int index = 0;
+	// Set in editor. The rope's prefab.
+	public RopeController rope;
 
 	/**
 	 * Returns what percent charged you are
@@ -154,7 +156,7 @@ public class PlayerController : MonoBehaviour {
 	//Called on the object's creation
 	void Start() {
 		body = gameObject.GetComponent<Rigidbody2D>();
-		animator = gameObject.GetComponent<Animator>();
+		//animator = gameObject.GetComponent<Animator>();
 
 		//Inintialize stat levels, defaulting to 0
 		statLevels = new int[StatConstants.NUM_STATS];
@@ -196,6 +198,18 @@ public class PlayerController : MonoBehaviour {
 				&& charging) {//Make sure you aren't being tricky with buttons or burned out if we implement that
 			Boost();
 		}
+	}
+
+	void OnCollisionEnter2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Player" && coll.gameObject.GetComponent<PlayerController>().index > index) {
+			Instantiate(rope);
+			//TODO: Rope length
+			//TODO: Make rope only when someone boosting whom you're not attached to
+			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
+			//TODO: Replace rope if there's an old rope
+			rope.MakeRope(transform, coll.transform, 0.2f, 8);
+		}
+
 	}
 
 	/*
