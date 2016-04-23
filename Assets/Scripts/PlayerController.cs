@@ -74,11 +74,14 @@ public class PlayerController : MonoBehaviour {
 	 */
 	private Vector2 InputVector() {
 		//Figure out which direction to travel in  
-		Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
+		//Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
+		Vector2 input = new Vector2(-Input.GetAxisRaw("Y" + index), Input.GetAxisRaw("X" + index));
 		if (index == 1) {
       	input.x += Input.GetAxisRaw("X1 Alt");
       	input.y += Input.GetAxisRaw("Y1 Alt");
    	}
+
+   	print(input);
 
 		if (input.magnitude < INPUT_THRESHOLD_LOW)
 			input = Vector2.zero;
