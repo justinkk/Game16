@@ -18,9 +18,10 @@ public class PlayerController : MonoBehaviour {
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
 	public const float BRAKES_TO_CHARGE_SPEED = 0.8f;
-	//How much torque should be applied, based on degrees you're off
-	public const float DEGREES_TO_TORQUE = 0.03f;
-	public const float MAX_ANGULAR_VELOCITY = 360;
+	//How much angular velocity should be applied, based on degrees you're off
+	//public const float DEGREES_TO_TORQUE = 0.03f;
+	//public const float MAX_ANGULAR_VELOCITY = 360;
+	public const float OFFSET_TO_ANGULAR_VELOCITY = 1440.0f;
 
 	//Instance variables
 	private Rigidbody2D body;
@@ -102,7 +103,7 @@ public class PlayerController : MonoBehaviour {
 				desiredDirection = body.velocity;
 		}
 		
-
+		//Quickly turn to desired direction
 		if (desiredDirection != Vector2.zero) {
 			float angle = Vector2.Angle(Vector2.up, desiredDirection);
 			if (desiredDirection.x > 0)
@@ -115,7 +116,8 @@ public class PlayerController : MonoBehaviour {
 
 			print(desiredDirection + ", " + angle + ", " + angleDifference);
 
-			body.angularVelocity = 9 * angleDifference;
+			//Quickly go, faster for a bigger angle difference. Biggest when difference is 180
+			body.angularVelocity = OFFSET_TO_ANGULAR_VELOCITY * Mathf.Sin(Mathf.PI * angleDifference / 720);
 			//body.AddTorque(angleDifference * DEGREES_TO_TORQUE);
 			//body.angularVelocity = Mathf.Clamp(body.angularVelocity, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
 			//transform.eulerAngles = new Vector3(0, 0, angle);
