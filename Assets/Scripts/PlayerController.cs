@@ -146,7 +146,7 @@ public class PlayerController : MonoBehaviour {
 	 */
 	private void Boost() {
 		float boostAmount = ChargePercent() * ComputeStat(StatConstants.BOOST);
-		body.AddForce(InputVector() * boostAmount, ForceMode2D.Impulse);
+		body.AddForce(InputVector() * boostAmount * body.mass, ForceMode2D.Impulse);
 		boostEnd = Time.time + boostAmount * BOOST_TO_BOOST_TIME;
 		charging = false;
 	}
@@ -170,7 +170,7 @@ public class PlayerController : MonoBehaviour {
 		if (force != Vector2.zero) {
 			body.drag = 0;
 			force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
-			body.AddForce(force);
+			body.AddForce(force * body.mass);
 		}
 		if (force == Vector2.zero || charging) {
 			//Apply brakes with linear drag
@@ -181,7 +181,7 @@ public class PlayerController : MonoBehaviour {
 		Vector2 currVelocity = body.velocity;
 		float magnitude = currVelocity.magnitude;
 		currVelocity.Normalize();
-		body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient());
+		body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
 
 		TurnCharacter();
 	}
