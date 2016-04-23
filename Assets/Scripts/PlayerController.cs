@@ -10,8 +10,6 @@ public class PlayerController : MonoBehaviour {
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
 
 	private const int DEGREES_IN_CIRCLE = 360;
-	private const UnityEngine.KeyCode A_BUTTON = KeyCode.Joystick1Button4;
-	private const UnityEngine.KeyCode Z_BUTTON = KeyCode.Joystick1Button12;
 
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
@@ -69,7 +67,7 @@ public class PlayerController : MonoBehaviour {
 	private Vector2 InputVector() {
 		//Figure out which direction to travel in  
 		//Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
-		Vector2 input = new Vector2(-Input.GetAxisRaw("Y" + index), Input.GetAxisRaw("X" + index));
+		Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
 		if (index == 1) {
       	input.x += Input.GetAxisRaw("X1 Alt");
       	input.y += Input.GetAxisRaw("Y1 Alt");
@@ -163,12 +161,13 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
 		//Record when you started charging boost 
-		if (Input.GetKeyDown("space") || Input.GetKeyDown(A_BUTTON) || Input.GetKeyDown(Z_BUTTON)) {
+		//if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
+		if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
 			charging = true;
 			chargeStart = Time.time;
 		}
 		//Apply a boost
-		if (Input.GetKeyUp("space") || Input.GetKeyUp(A_BUTTON) || Input.GetKeyUp(Z_BUTTON)) {
+		if (Input.GetKeyUp("space") || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index))) {
 			if (charging) { //Make sure you aren't being tricky with buttons or burned out if we implement that
 				body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
 				charging = false;
