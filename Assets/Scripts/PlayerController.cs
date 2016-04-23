@@ -115,8 +115,9 @@ public class PlayerController : MonoBehaviour {
 
 			print(desiredDirection + ", " + angle + ", " + angleDifference);
 
-			body.AddTorque(angleDifference * DEGREES_TO_TORQUE);
-			body.angularVelocity = Mathf.Clamp(body.angularVelocity, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
+			body.angularVelocity = 9 * angleDifference;
+			//body.AddTorque(angleDifference * DEGREES_TO_TORQUE);
+			//body.angularVelocity = Mathf.Clamp(body.angularVelocity, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
 			//transform.eulerAngles = new Vector3(0, 0, angle);
 		}
 	}
