@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour {
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
 	public const float BRAKES_TO_CHARGE_SPEED = 0.8f;
+	//How much torque should be applied, based on degrees you're off
+	public const float DEGREES_TO_TORQUE = 0.01f;
 
 	//Instance variables
 	private Rigidbody2D body;
@@ -40,7 +42,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	//Returns whether the axis parameter is big enough to represent a button press
-	private bool Pressed(float axis) {
+	private bool KeyPressed(float axis) {
 		return Mathf.Abs(axis) > INPUT_THRESHOLD_HIGH;
 	}
 
@@ -78,12 +80,30 @@ public class PlayerController : MonoBehaviour {
 		if (input.magnitude < INPUT_THRESHOLD_LOW)
 			input = Vector2.zero;
 
-		if (Pressed(input.x) && Pressed(input.y)) {
+		if (KeyPressed(input.x) && KeyPressed(input.y)) {
 			//Diagonal: normalize the movement speed
 			input *= ONE_OVER_ROOT_TWO;	//TODO: Only applies to keyboard movement, make sure you're on keyboard
-		} 
+		}
 
 		return input;
+	}
+
+	/*
+	 * If it isn't zero, turns the character in the direction of movement
+	 */
+	private void TurnCharacter() {
+		Vector2 desiredDirection = Vector2.zero;
+		if (body.velocity.magnitude > INPUT_THRESHOLD_LOW)
+			desiredDirection = body.velocity;
+		else if (InputVector().magnitude > INPUT_THRESHOLD_LOW)
+			desiredDirection = InputVector();
+
+		if (desiredDirection != Vector2.zero) {
+			float angle = Vector2.Angle(Vector2.up, desiredDirection);
+			if (desiredDirection.x > 0)
+				angle = 360 - angle;
+			transform.eulerAngles = new Vector3(0, 0, angle);
+		}
 	}
 
 	//Called on the object's creation
@@ -100,7 +120,7 @@ public class PlayerController : MonoBehaviour {
 	//Called once per physics step
 	void FixedUpdate() {
 		Vector2 force = InputVector();
-		
+
 		//Apply force
 		if (force != Vector2.zero) {
 			body.drag = 0;
@@ -117,6 +137,8 @@ public class PlayerController : MonoBehaviour {
 		float magnitude = currVelocity.magnitude;
 		currVelocity.Normalize();
 		body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient());
+
+		TurnCharacter();
 	}
 	
 	// Update is called once per frame
