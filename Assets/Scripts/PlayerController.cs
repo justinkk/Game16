@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-   private static readonly float[] DEFAULT_STATS = {5, 10, 2, 30}; //Default base stats
+   private static readonly float[] DEFAULT_STATS = {5, 10, 1.5f, 30}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour {
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
 	public const float BRAKES_TO_CHARGE_SPEED = 0.8f;
+	//Multiplier for how long your boost lasts depending on boost stat
+	public const float BOOST_TO_BOOST_TIME = 0.015f;
 	//How much angular velocity should be applied, based on degrees you're off
 	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour {
 
 	private bool charging = false;
 	private float chargeStart;
+	private float boostEnd = -100; //Boost end time. Initialized to negative so you're not starting in a boost
 
 	// Set in editor. Determines which controller to use.
 	public int index = 0;
@@ -39,6 +42,13 @@ public class PlayerController : MonoBehaviour {
 			return Mathf.Min((Time.time - chargeStart) * ComputeStat(StatConstants.BRAKES), 1.0f);
 		else 
 			return 0;
+	}
+
+	/**
+	 * Returns whether the character is currently boosting
+	 */
+	public bool IsBoosting() {
+		return boostEnd > Time.time;
 	}
 
 	//Gives current value of a stat, given base value and current level
@@ -123,6 +133,24 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	/**
+	 * Tell the character to charge
+	 */
+	private void Charge() {
+		charging = true;
+		chargeStart = Time.time;
+	}
+
+	/**
+	 * Tell the character to boost
+	 */
+	private void Boost() {
+		float boostAmount = ChargePercent() * ComputeStat(StatConstants.BOOST);
+		body.AddForce(InputVector() * boostAmount, ForceMode2D.Impulse);
+		boostEnd = Time.time + boostAmount * BOOST_TO_BOOST_TIME;
+		charging = false;
+	}
+
 	//Called on the object's creation
 	void Start() {
 		body = gameObject.GetComponent<Rigidbody2D>();
@@ -160,18 +188,13 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
-		//Record when you started charging boost 
-		//if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
+		//Charge or boost
 		if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
-			charging = true;
-			chargeStart = Time.time;
+			Charge();
 		}
-		//Apply a boost
-		if (Input.GetKeyUp("space") || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index))) {
-			if (charging) { //Make sure you aren't being tricky with buttons or burned out if we implement that
-				body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
-				charging = false;
-			}
+		if ((Input.GetKeyUp("space") || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index)))
+				&& charging) {//Make sure you aren't being tricky with buttons or burned out if we implement that
+			Boost();
 		}
 	}
 
