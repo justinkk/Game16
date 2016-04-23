@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour {
 
    private static readonly float[] DEFAULT_STATS = {5, 10, 2, 30}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
+	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	public const float INPUT_THRESHOLD_HIGH = 0.8f; //Key pressed if axis > this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
@@ -94,10 +95,13 @@ public class PlayerController : MonoBehaviour {
 	 */
 	private void TurnCharacter() {
 		Vector2 desiredDirection = Vector2.zero;
-		if (body.velocity.magnitude > INPUT_THRESHOLD_LOW)
-			desiredDirection = body.velocity;
-		else if (InputVector().magnitude > INPUT_THRESHOLD_LOW)
-			desiredDirection = InputVector();
+		if (InputVector().magnitude > INPUT_THRESHOLD_LOW) {
+			if (charging)
+				desiredDirection = InputVector();
+			else if (body.velocity.magnitude > VELOCITY_THRESHOLD_LOW)
+				desiredDirection = body.velocity;
+		}
+		
 
 		if (desiredDirection != Vector2.zero) {
 			float angle = Vector2.Angle(Vector2.up, desiredDirection);
