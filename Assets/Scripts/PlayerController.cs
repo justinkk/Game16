@@ -81,16 +81,32 @@ public class PlayerController : MonoBehaviour {
       	input.y += Input.GetAxisRaw("Y1 Alt");
    	}
 
-   	print(input);
 
-		if (input.magnitude < INPUT_THRESHOLD_LOW)
+   	if (input.magnitude < INPUT_THRESHOLD_LOW)
 			input = Vector2.zero;
 
+		//Turn input on the unit square into input on the unit circle
+		if (input != Vector2.zero) {
+			if (Mathf.Abs(input.x) > Mathf.Abs(input.y)) {
+				//Divide by secant from right, by definition:
+				//https://en.wikipedia.org/wiki/File:Unitcircledefs.svg
+				input *= Mathf.Sin(Mathf.Deg2Rad * Vector2.Angle(Vector2.up, input));
+			} else {
+				//Divide by cosecant from right, by definition:
+				//https://en.wikipedia.org/wiki/File:Unitcirclecodefs.svg
+				input *= Mathf.Sin(Mathf.Deg2Rad * Vector2.Angle(Vector2.right, input));
+			}
+		}
+
+		
+		/*
 		if (KeyPressed(input.x) && KeyPressed(input.y)) {
 			//Diagonal: normalize the movement speed
 			input *= ONE_OVER_ROOT_TWO;	//TODO: Only applies to keyboard movement, make sure you're on keyboard
 		}
+		*/
 
+   	//print(input);
 		return input;
 	}
 
