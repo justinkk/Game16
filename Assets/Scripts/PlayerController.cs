@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour {
 	//Multiply by this to get %charged per second
 	public const float BRAKES_TO_CHARGE_SPEED = 0.8f;
 	//How much torque should be applied, based on degrees you're off
-	public const float DEGREES_TO_TORQUE = 0.01f;
+	public const float DEGREES_TO_TORQUE = 0.03f;
+	public const float MAX_ANGULAR_VELOCITY = 360;
 
 	//Instance variables
 	private Rigidbody2D body;
@@ -102,7 +103,17 @@ public class PlayerController : MonoBehaviour {
 			float angle = Vector2.Angle(Vector2.up, desiredDirection);
 			if (desiredDirection.x > 0)
 				angle = 360 - angle;
-			transform.eulerAngles = new Vector3(0, 0, angle);
+			float angleDifference = angle - transform.eulerAngles.z;
+			if (angleDifference < -180)
+				angleDifference += 360;
+			else if (angleDifference > 180)
+				angleDifference -= 360;
+
+			print(desiredDirection + ", " + angle + ", " + angleDifference);
+
+			body.AddTorque(angleDifference * DEGREES_TO_TORQUE);
+			body.angularVelocity = Mathf.Clamp(body.angularVelocity, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
+			//transform.eulerAngles = new Vector3(0, 0, angle);
 		}
 	}
 
