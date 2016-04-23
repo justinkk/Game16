@@ -11,7 +11,6 @@ public class PlayerController : MonoBehaviour {
    private static readonly float[] DEFAULT_STATS = {5, 10, 2, 30}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
-	public const float INPUT_THRESHOLD_HIGH = 0.8f; //Key pressed if axis > this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
 
 	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
@@ -42,11 +41,6 @@ public class PlayerController : MonoBehaviour {
 			return Mathf.Min((Time.time - chargeStart) * ComputeStat(StatConstants.BRAKES), 1.0f);
 		else 
 			return 0;
-	}
-
-	//Returns whether the axis parameter is big enough to represent a button press
-	private bool KeyPressed(float axis) {
-		return Mathf.Abs(axis) > INPUT_THRESHOLD_HIGH;
 	}
 
 	//Gives current value of a stat, given base value and current level
@@ -98,15 +92,6 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 
-		
-		/*
-		if (KeyPressed(input.x) && KeyPressed(input.y)) {
-			//Diagonal: normalize the movement speed
-			input *= ONE_OVER_ROOT_TWO;	//TODO: Only applies to keyboard movement, make sure you're on keyboard
-		}
-		*/
-
-   	//print(input);
 		return input;
 	}
 
