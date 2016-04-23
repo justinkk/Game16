@@ -4,17 +4,14 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-
-	// Set in editor. Determines which controller to use.
-	public int index = 0;
-
    private static readonly float[] DEFAULT_STATS = {5, 10, 2, 30}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
 
-	private static readonly float ONE_OVER_ROOT_TWO = 1.0f / Mathf.Sqrt(2.0f);
 	private const int DEGREES_IN_CIRCLE = 360;
+	private const UnityEngine.KeyCode A_BUTTON = KeyCode.Joystick1Button4;
+	private const UnityEngine.KeyCode Z_BUTTON = KeyCode.Joystick1Button12;
 
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
@@ -30,6 +27,9 @@ public class PlayerController : MonoBehaviour {
 
 	private bool charging = false;
 	private float chargeStart;
+
+	// Set in editor. Determines which controller to use.
+	public int index = 0;
 
 	/**
 	 * Returns what percent charged you are
@@ -80,6 +80,7 @@ public class PlayerController : MonoBehaviour {
 			input = Vector2.zero;
 
 		//Turn input on the unit square into input on the unit circle
+		//So that input of (1,1) becomes (1/sqrt(2), 1/sqrt(2)) and so on
 		if (input != Vector2.zero) {
 			if (Mathf.Abs(input.x) > Mathf.Abs(input.y)) {
 				//Divide by secant from right, by definition:
@@ -161,15 +162,17 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
-		//Record when you started charging boost
-		if (Input.GetKeyDown("space")) {
+		//Record when you started charging boost 
+		if (Input.GetKeyDown("space") || Input.GetKeyDown(A_BUTTON) || Input.GetKeyDown(Z_BUTTON)) {
 			charging = true;
 			chargeStart = Time.time;
 		}
 		//Apply a boost
-		if (Input.GetKeyUp("space")) {
-			body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
-			charging = false;
+		if (Input.GetKeyUp("space") || Input.GetKeyUp(A_BUTTON) || Input.GetKeyUp(Z_BUTTON)) {
+			if (charging) { //Make sure you aren't being tricky with buttons or burned out if we implement that
+				body.AddForce(InputVector() * ChargePercent() * ComputeStat(StatConstants.BOOST), ForceMode2D.Impulse);
+				charging = false;
+			}
 		}
 	}
 
