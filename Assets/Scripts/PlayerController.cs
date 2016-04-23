@@ -151,8 +151,12 @@ public class PlayerController : MonoBehaviour {
 		charging = false;
 	}
 
-	//Called on the object's creation
-	void Start() {
+    void Awake() {
+        DontDestroyOnLoad(gameObject);
+    }
+
+    //Called on the object's creation
+    void Start() {
 		body = gameObject.GetComponent<Rigidbody2D>();
 		animator = gameObject.GetComponent<Animator>();
 
