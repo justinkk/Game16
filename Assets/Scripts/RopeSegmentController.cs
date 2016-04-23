@@ -3,8 +3,8 @@ using System.Collections;
 
 [RequireComponent (typeof (DistanceJoint2D))]
 public class RopeSegmentController : MonoBehaviour {
-   public Transform fromTransform;
-   public Transform toTransform;
+   protected Transform fromTransform;
+   protected Transform toTransform;
 
    protected DistanceJoint2D joint;
    
@@ -23,8 +23,10 @@ public class RopeSegmentController : MonoBehaviour {
     * Makes sure joint has been initialized
     */
    private void FindJoint() {
-      if (joint == null)
+      if (joint == null) {
          joint = GetComponent<DistanceJoint2D>();
+         ((Joint2D) joint).breakForce = Mathf.Infinity;
+      }
    }
 
    /*
@@ -61,9 +63,12 @@ public class RopeSegmentController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
       //Turn to match rotation of left and right joints
-      Vector2 delta = new Vector2(fromTransform.position.x - toTransform.position.x,
-         fromTransform.position.y - toTransform.position.y);
-      float angle = Vector2.Angle(delta, Vector2.up);
-      transform.eulerAngles = new Vector3(0, 0, angle);
+      if (fromTransform != null && toTransform != null) {
+         Vector2 delta = new Vector2(fromTransform.position.x - toTransform.position.x,
+            fromTransform.position.y - toTransform.position.y);
+         float angle = Vector2.Angle(delta, Vector2.up);
+         transform.eulerAngles = new Vector3(0, 0, angle + 90);
+         //TODO: Fix angle. check out playercontroller code
+      }
 	}
 }

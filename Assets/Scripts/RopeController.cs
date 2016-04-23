@@ -30,20 +30,50 @@ public class RopeController : RopeSegmentController {
       joint.distance = segmentLength;
 
       //Right side
+      RopeSegmentController currSegment = Instantiate(segment);
+      toTransform = currSegment.transform;
+      print(toTransform);
+      //currSegment.transform.parent = this.transform;
+      currSegment.SetLength(segmentLength);
+      joints[0].breakForce = Mathf.Infinity;
+      joints[0].connectedBody = toTransform.GetComponent<Rigidbody2D>();
+      
+      RopeSegmentController lastSegment = currSegment;
+      currSegment = null;
+      MakeChain(ref lastSegment, ref currSegment, numSegments - 1, segmentLength);
+      currSegment.SetTo(to);
+
+      //Left side
+      //lastSegment = this;
+      currSegment = Instantiate(segment);
+      //currSegment.transform.parent = this.transform;
+      currSegment.SetLength(segmentLength);
+      joints[1].breakForce = Mathf.Infinity;
+      joints[1].connectedBody = currSegment.gameObject.GetComponent<Rigidbody2D>();
+      fromTransform = currSegment.transform;
+      lastSegment = currSegment;
+      currSegment = null;
+      MakeChain(ref lastSegment, ref currSegment, numSegments - 1, segmentLength);
+      currSegment.SetTo(from);
+      /*
+      //Right side
       RopeSegmentController lastSegment = this;
       RopeSegmentController currSegment = null;
       this.MakeChain(ref lastSegment, ref currSegment, numSegments, segmentLength);
       currSegment.SetTo(to);
 
       //Left side
-      lastSegment = this;
+      //lastSegment = this;
       currSegment = Instantiate(segment);
       //currSegment.transform.parent = this.transform;
       currSegment.SetLength(segmentLength);
       joints[1].connectedBody = currSegment.GetComponent<Rigidbody2D>();
+      this.SetTo(currSegment.transform);
       lastSegment = currSegment;
       currSegment = null;
       MakeChain(ref lastSegment, ref currSegment, numSegments - 1, segmentLength);
       currSegment.SetTo(from);
+      */
    }
+
 }
