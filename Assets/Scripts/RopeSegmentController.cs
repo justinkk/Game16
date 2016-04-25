@@ -3,8 +3,8 @@ using System.Collections;
 
 [RequireComponent (typeof (DistanceJoint2D))]
 public class RopeSegmentController : MonoBehaviour {
-   protected Transform fromTransform;
-   protected Transform toTransform;
+   public Transform fromTransform;
+   public Transform toTransform;
 
    protected DistanceJoint2D joint;
    
@@ -25,7 +25,7 @@ public class RopeSegmentController : MonoBehaviour {
    private void FindJoint() {
       if (joint == null) {
          joint = GetComponent<DistanceJoint2D>();
-         ((Joint2D) joint).breakForce = Mathf.Infinity;
+         //joint.breakForce = 100000f;
       }
    }
 

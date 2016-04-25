@@ -202,12 +202,12 @@ public class PlayerController : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Player" && coll.gameObject.GetComponent<PlayerController>().index > index) {
-			Instantiate(rope);
+			//Instantiate(rope);
 			//TODO: Rope length
 			//TODO: Make rope only when someone boosting whom you're not attached to
 			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
 			//TODO: Replace rope if there's an old rope
-			rope.MakeRope(transform, coll.transform, 0.2f, 8);
+			//rope.MakeRope(transform, coll.transform, 0.2f, 2);
 		}
 
 	}

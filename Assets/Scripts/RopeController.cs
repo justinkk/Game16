@@ -3,21 +3,48 @@ using System.Collections;
 
 [RequireComponent (typeof (DistanceJoint2D), typeof (DistanceJoint2D))]
 public class RopeController : RopeSegmentController {
-   public RopeSegmentController segment;
+   //public RopeSegmentController segment;
    private DistanceJoint2D[] joints;
+
    /*
-    * Instantiates length number of rope segments, leaves lastSegment and currSegment referring to last one
+    * Instantiates length number of rope segments, returns the last segment in the chain
     */
-   private void MakeChain(ref RopeSegmentController lastSegment, ref RopeSegmentController currSegment, int length, float segmentLength) {
+   private RopeSegmentController MakeChain(RopeSegmentController lastSegment, RopeSegmentController currSegment, int length, float segmentLength,
+         RopeSegmentController segment) {
       for (int i = 0; i < length; i++) {
-         currSegment = Instantiate(segment);
+         currSegment = (RopeSegmentController) Instantiate(segment);
          //currSegment.transform.parent = this.transform;
          currSegment.SetLength(segmentLength);
-         lastSegment.SetTo(currSegment.transform);
          currSegment.SetFrom(lastSegment.transform);
+         lastSegment.SetTo(currSegment.transform);
 
+         if (i == 0) {
+            print(currSegment.GetComponent<Rigidbody2D>());
+            print(lastSegment.GetComponent<DistanceJoint2D>().connectedBody);
+            lastSegment.GetComponent<DistanceJoint2D>().connectedBody = currSegment.GetComponent<Rigidbody2D>();
+            print(lastSegment.GetComponent<DistanceJoint2D>().connectedBody);
+
+         }
          lastSegment = currSegment;
       }
+
+      return currSegment;
+   }
+
+   /*
+    * Instantiates length number of rope segments to the right side, returns the last one
+    */
+   private RopeSegmentController MakeChainRight(RopeSegmentController lastSegment, 
+         RopeSegmentController currSegment, int length, float segmentLength) {
+      return MakeChain(lastSegment, currSegment, length, segmentLength, toTransform.gameObject.GetComponent<RopeSegmentController>());
+   }
+
+   /*
+    * Instantiates length number of rope segments to the left side, returns the last one
+    */
+   private RopeSegmentController MakeChainLeft(RopeSegmentController lastSegment, 
+         RopeSegmentController currSegment, int length, float segmentLength) {
+      return MakeChain(lastSegment, currSegment, length, segmentLength, fromTransform.gameObject.GetComponent<RopeSegmentController>());
    }
 
    /*
@@ -29,6 +56,19 @@ public class RopeController : RopeSegmentController {
       joint = joints[0];
       joint.distance = segmentLength;
 
+      //Right side
+      RopeSegmentController lastSegment = toTransform.gameObject.GetComponent<RopeSegmentController>();
+      RopeSegmentController currSegment = lastSegment;
+      currSegment = MakeChainRight(lastSegment, currSegment, numSegments - 1, segmentLength);
+      currSegment.SetTo(to);
+
+      //Left side
+      lastSegment = fromTransform.gameObject.GetComponent<RopeSegmentController>();
+      currSegment = lastSegment;
+      currSegment = MakeChainLeft( lastSegment, currSegment, numSegments - 1, segmentLength);
+      currSegment.SetTo(from);
+
+      /*
       //Right side
       RopeSegmentController currSegment = Instantiate(segment);
       toTransform = currSegment.transform;
@@ -55,6 +95,7 @@ public class RopeController : RopeSegmentController {
       currSegment = null;
       MakeChain(ref lastSegment, ref currSegment, numSegments - 1, segmentLength);
       currSegment.SetTo(from);
+      */
       /*
       //Right side
       RopeSegmentController lastSegment = this;
