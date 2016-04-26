@@ -46,12 +46,16 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraController.cs" />
+     <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\KeyCodes.cs" />
+     <Compile Include="Assets\Scripts\MinigameManager.cs" />
+     <Compile Include="Assets\Scripts\MinigameManager0.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Powerup.cs" />
      <Compile Include="Assets\Scripts\RopeController.cs" />
      <Compile Include="Assets\Scripts\RopeSegmentController.cs" />
      <Compile Include="Assets\Scripts\StatConstants.cs" />
+     <Compile Include="Assets\Scripts\UIManager.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
