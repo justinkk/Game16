@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour {
 	private float chargeStart;
 	private float boostEnd = -100; //Boost end time. Initialized to negative so you're not starting in a boost
 
+	private ParticleSystem exhaustParticles;
 	// Set in editor. Determines which controller to use.
 	public int index = 0;
 	// Set in editor. The rope's prefab.
@@ -140,6 +141,8 @@ public class PlayerController : MonoBehaviour {
 	 */
 	private void Charge() {
 		charging = true;
+		exhaustParticles.emissionRate = 30;
+		print ("HELLLLLLLLLLLLOOOOOO");
 		chargeStart = Time.time;
 	}
 
@@ -151,6 +154,8 @@ public class PlayerController : MonoBehaviour {
 		body.AddForce(InputVector() * boostAmount * body.mass, ForceMode2D.Impulse);
 		boostEnd = Time.time + boostAmount * BOOST_TO_BOOST_TIME;
 		charging = false;
+		exhaustParticles.emissionRate = 0;
+
 	}
 
     void Awake() {
@@ -160,6 +165,15 @@ public class PlayerController : MonoBehaviour {
     //Called on the object's creation
     void Start() {
 		body = gameObject.GetComponent<Rigidbody2D>();
+
+		GameObject smoke = Resources.Load ("Smoke") as GameObject;
+		GameObject playerExhaust = Instantiate (smoke);
+		playerExhaust.transform.SetParent (gameObject.transform);
+		playerExhaust.transform.localPosition = new Vector3 (0f, 0f, 0f);
+		playerExhaust.transform.localRotation = Quaternion.Euler (90f, 0f, 0f);
+
+		exhaustParticles = playerExhaust.GetComponent<ParticleSystem> ();
+		exhaustParticles.simulationSpace = ParticleSystemSimulationSpace.World;
 		//animator = gameObject.GetComponent<Animator>();
 
 		//Inintialize stat levels, defaulting to 0
