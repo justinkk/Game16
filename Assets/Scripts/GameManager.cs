@@ -33,12 +33,14 @@ public class GameManager : MonoBehaviour {
     }
     
     void Start () {
-        // TODO don't start the game until we know at least 1 or 2 players are in
-        startGame();
+
     }
 
-    void startPlayer(PlayerController player) {
+    public void startPlayer(PlayerController player) {
         if (state == State.Menu || state == State.Game) {
+            if (state == State.Menu) {
+                startGame();
+            }
             activePlayers[player.index - 1] = player;
         }
     }
@@ -90,8 +92,10 @@ public class GameManager : MonoBehaviour {
     }
 
     void startGame() {
-        state = State.Game;
-        startTimer(5 * 60);
+        if (state == State.Menu) {
+            state = State.Game;
+            startTimer(5 * 60);
+        }
     }
 
     void loadMinigame() {

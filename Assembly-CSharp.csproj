@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\KeyCodes.cs" />
      <Compile Include="Assets\Scripts\MinigameManager.cs" />
      <Compile Include="Assets\Scripts\MinigameManager0.cs" />
+     <Compile Include="Assets\Scripts\PlayerCanvas.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Powerup.cs" />
      <Compile Include="Assets\Scripts\RopeController.cs" />

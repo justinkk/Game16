@@ -8,6 +8,12 @@ public class PlayerController : MonoBehaviour {
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
+    public static readonly Color[] COLORS = {
+        new Color(1f, 0.6f, 0.6f, 1f),
+        new Color(1f, 1.0f, 0.6f, 1f),
+        new Color(0.6f, 0.8f, 1.0f, 1f),
+        new Color(0.8f, 1.0f, 0.6f, 1f)
+    };
 
 	private const int DEGREES_IN_CIRCLE = 360;
 
@@ -19,7 +25,9 @@ public class PlayerController : MonoBehaviour {
 	//How much angular velocity should be applied, based on degrees you're off
 	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
-	//Instance variables
+    //Instance variables
+    private bool isPlaying = false;
+    private PlayerCanvas canvas;
 	private Rigidbody2D body;
 	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
@@ -81,12 +89,12 @@ public class PlayerController : MonoBehaviour {
 		//Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
 		Vector2 input = new Vector2(Input.GetAxisRaw("X" + index), Input.GetAxisRaw("Y" + index));
 		if (index == 1) {
-      	input.x += Input.GetAxisRaw("X1 Alt");
-      	input.y += Input.GetAxisRaw("Y1 Alt");
-   	}
+      	    input.x += Input.GetAxisRaw("X1 Alt");
+      	    input.y += Input.GetAxisRaw("Y1 Alt");
+   	    }
 
 
-   	if (input.magnitude < INPUT_THRESHOLD_LOW)
+   	    if (input.magnitude < INPUT_THRESHOLD_LOW)
 			input = Vector2.zero;
 
 		//Turn input on the unit square into input on the unit circle
@@ -139,6 +147,7 @@ public class PlayerController : MonoBehaviour {
 	 * Tell the character to charge
 	 */
 	private void Charge() {
+        canvas.ShowMessage("CHARGING"); // probably remove this later
 		charging = true;
 		chargeStart = Time.time;
 	}
@@ -159,6 +168,8 @@ public class PlayerController : MonoBehaviour {
 
     //Called on the object's creation
     void Start() {
+        canvas = UICreator.instance.addPlayerCanvas(index);
+
 		body = gameObject.GetComponent<Rigidbody2D>();
 		//animator = gameObject.GetComponent<Animator>();
 
@@ -168,40 +179,54 @@ public class PlayerController : MonoBehaviour {
 		baseStats = (float[])DEFAULT_STATS.Clone();
    }
 
+    void StartPlaying() {
+        isPlaying = true;
+        canvas.HideMenu();
+        GameManager.instance.startPlayer(this);
+    }
+
 	//Called once per physics step
 	void FixedUpdate() {
-		Vector2 force = InputVector();
+        if (isPlaying) {
+            Vector2 force = InputVector();
 
-		//Apply force
-		if (force != Vector2.zero) {
-			body.drag = 0;
-			force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
-			body.AddForce(force * body.mass);
-		}
-		if (force == Vector2.zero || charging) {
-			//Apply brakes with linear drag
-			body.drag = ComputeStat(StatConstants.BRAKES);
-		}
+            //Apply force
+            if (force != Vector2.zero) {
+                body.drag = 0;
+                force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
+                body.AddForce(force * body.mass);
+            }
+            if (force == Vector2.zero || charging) {
+                //Apply brakes with linear drag
+                body.drag = ComputeStat(StatConstants.BRAKES);
+            }
 
-		//Handle top speed with quadratic drag
-		Vector2 currVelocity = body.velocity;
-		float magnitude = currVelocity.magnitude;
-		currVelocity.Normalize();
-		body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
+            //Handle top speed with quadratic drag
+            Vector2 currVelocity = body.velocity;
+            float magnitude = currVelocity.magnitude;
+            currVelocity.Normalize();
+            body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
 
-		TurnCharacter();
+            TurnCharacter();
+        }
 	}
 	
 	// Update is called once per frame
 	void Update() {
 		//Charge or boost
-		if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
-			Charge();
+		if ((index == 1 && Input.GetKeyDown("space")) || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
+            if (!isPlaying) {
+                StartPlaying();
+            } else {
+                Charge();
+            }
 		}
-		if ((Input.GetKeyUp("space") || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index)))
-				&& charging) {//Make sure you aren't being tricky with buttons or burned out if we implement that
+		if ((index == 1 && Input.GetKeyUp("space")) || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index))
+                && charging) {//Make sure you aren't being tricky with buttons or burned out if we implement that
 			Boost();
 		}
+
+        canvas.Update();
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
