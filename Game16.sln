@@ -1,7 +1,11 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2008
 
+Project("{79784A95-1E42-8B3B-EA4A-E0E22A889816}") = "Game16", "Assembly-CSharp-firstpass.csproj", "{AE782BFA-074D-ABE7-9AA1-B709F20BEF7E}"
+EndProject
 Project("{79784A95-1E42-8B3B-EA4A-E0E22A889816}") = "Game16", "Assembly-CSharp.csproj", "{BC9219A8-D081-1586-23DF-C46517871B88}"
+EndProject
+Project("{79784A95-1E42-8B3B-EA4A-E0E22A889816}") = "Game16", "Assembly-CSharp-Editor.csproj", "{3435A98D-EEA6-9DEB-B3F2-EDEEFC969102}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE782BFA-074D-ABE7-9AA1-B709F20BEF7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE782BFA-074D-ABE7-9AA1-B709F20BEF7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE782BFA-074D-ABE7-9AA1-B709F20BEF7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE782BFA-074D-ABE7-9AA1-B709F20BEF7E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC9219A8-D081-1586-23DF-C46517871B88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC9219A8-D081-1586-23DF-C46517871B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC9219A8-D081-1586-23DF-C46517871B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC9219A8-D081-1586-23DF-C46517871B88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3435A98D-EEA6-9DEB-B3F2-EDEEFC969102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3435A98D-EEA6-9DEB-B3F2-EDEEFC969102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3435A98D-EEA6-9DEB-B3F2-EDEEFC969102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3435A98D-EEA6-9DEB-B3F2-EDEEFC969102}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
