@@ -31,7 +31,9 @@ public class PlayerController : MonoBehaviour {
    private PlayerCanvas canvas;
    public new Camera camera;
 	private Rigidbody2D body;
+
    private RopeController playerRope = null;
+   private int attachedPlayerIndex = -1;
 	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
 	private int[] statLevels;
@@ -67,10 +69,19 @@ public class PlayerController : MonoBehaviour {
 	}
 
    /**
-    *
+    * Returns the index of the attached player
+    * -1 if not attached
     */
-   public void SetPlayerRope(RopeController rope) {
+   public int GetAttachedPlayer() {
+      return attachedPlayerIndex;
+   }
+
+   /**
+    * Set data about which rope is being attached and who you're attaching to
+    */
+   public void SetPlayerRope(RopeController rope, int otherPlayerIndex) {
       playerRope = rope;
+      attachedPlayerIndex = otherPlayerIndex;
    }
 
 	//Gives current value of a stat, given base value and current level
@@ -217,29 +228,29 @@ public class PlayerController : MonoBehaviour {
 	//Called once per physics step
 	void FixedUpdate() {
      if (isPlaying) {
-     Vector2 force = InputVector();
+        Vector2 force = InputVector();
 
-     //Apply force
-     if (force != Vector2.zero) {
-        body.drag = 0;
-        force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
-        body.AddForce(force * body.mass);
-     }
-     if (force == Vector2.zero || charging) {
-        //Apply brakes with linear drag
-        body.drag = ComputeStat(StatConstants.BRAKES);
-     }
+        //Apply force
+        if (force != Vector2.zero) {
+           body.drag = 0;
+           force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
+           body.AddForce(force * body.mass);
+        }
+        if (force == Vector2.zero || charging) {
+           //Apply brakes with linear drag
+           body.drag = ComputeStat(StatConstants.BRAKES);
+        }
 
-     //Handle top speed with quadratic drag
-     Vector2 currVelocity = body.velocity;
-     float magnitude = currVelocity.magnitude;
-     currVelocity.Normalize();
-     body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
+        //Handle top speed with quadratic drag
+        Vector2 currVelocity = body.velocity;
+        float magnitude = currVelocity.magnitude;
+        currVelocity.Normalize();
+        body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
 
-     TurnCharacter();
+        TurnCharacter();
      } else {
-   //Brake before you start
-   body.drag = ComputeStat(StatConstants.BRAKES);
+        //Brake before you start
+        body.drag = ComputeStat(StatConstants.BRAKES);
      }
 	}
 	
@@ -268,21 +279,21 @@ public class PlayerController : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Player") {
-         PlayerController otherPlayer = coll.gameObject.GetComponent<PlayerController>();
-         if ((IsBoosting() || otherPlayer.IsBoosting())
-               && otherPlayer.index > index) {
+         PlayerController otherPlayer = coll.gameObject.GetComponent<PlayerController>();                //Attach rope if:
+         if ((IsBoosting() || otherPlayer.IsBoosting())                                                  //1. Someone's boosting
+               && attachedPlayerIndex != otherPlayer.index && index != otherPlayer.GetAttachedPlayer()   //2. Not already attached
+               && otherPlayer.index > index) {                                                           //Only make 1 rope
    			//TODO: Rope length
    			//TODO: Make rope only when someone boosting whom you're not attached to
    			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
    			//TODO: Replace rope if there's an old rope
             GameObject ropePrefab = Resources.Load("Rope") as GameObject;
             Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
-            print(location);
             RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
-            print(rope.transform.position);
-            SetPlayerRope(rope);
-            otherPlayer.SetPlayerRope(rope);
-   			playerRope.GetComponent<RopeController>().MakeRope(transform, coll.transform, 0.2f, 8, location);
+
+            SetPlayerRope(rope, otherPlayer.index);
+            otherPlayer.SetPlayerRope(rope, index);
+   			rope.MakeRope(transform, coll.transform, 0.2f, 8, location);
          }
 		}
 	}
