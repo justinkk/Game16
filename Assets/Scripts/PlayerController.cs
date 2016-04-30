@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour {
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
-   public static readonly Color[] COLORS = {
+   private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
       new Color(1f, 1.0f, 0.6f, 1f),
       new Color(0.6f, 0.8f, 1.0f, 1f),
@@ -26,8 +26,10 @@ public class PlayerController : MonoBehaviour {
 	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
    //Instance variables
-   private bool isPlaying = false;
-   private PlayerCanvas canvas;
+    private bool isPlaying = false;
+    public Color color;
+    private PlayerCanvas canvas;
+    public new Camera camera;
 	private Rigidbody2D body;
 	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
@@ -173,9 +175,11 @@ public class PlayerController : MonoBehaviour {
 
    //Called on the object's creation
    void Start() {
-      canvas = UICreator.instance.addPlayerCanvas(index);
+        color = COLORS[index - 1];
+        canvas = UICreator.instance.addPlayerCanvas(this);
+        camera = GetComponentInChildren<Camera>();
 
-		body = gameObject.GetComponent<Rigidbody2D>();
+        body = gameObject.GetComponent<Rigidbody2D>();
 
 		GameObject smoke = Resources.Load ("Smoke") as GameObject;
 		GameObject playerExhaust = Instantiate (smoke);
@@ -191,11 +195,14 @@ public class PlayerController : MonoBehaviour {
 		statLevels = new int[StatConstants.NUM_STATS];
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
-   }
 
-   void StartPlaying() {
+        // FOR TESTING ONLY: (otherwise startPlayer is called in StartPlaying())
+        //GameManager.instance.startPlayer(this);
+    }
+
+    void StartPlaying() {
       isPlaying = true;
-      canvas.HideMenu();
+      canvas.StartGame();
       GameManager.instance.startPlayer(this);
    }
 

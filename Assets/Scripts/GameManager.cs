@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager instance = null;
 
-    PlayerController[] activePlayers = new PlayerController[4];
+    public PlayerController[] activePlayers = new PlayerController[4];
 
     bool timerEnabled = false;
     float gameTimeFloat = 0;

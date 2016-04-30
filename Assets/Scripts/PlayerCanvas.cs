@@ -9,22 +9,38 @@ public class PlayerCanvas {
     float bottom = 0f;
     float left = 0f;
 
-    List<GameObject> menuComponents = new List<GameObject>();
+    const float ARROW_SIZE = 20;
 
-    int playerId;
+    List<GameObject> menuComponents = new List<GameObject>();
+    List<GameObject> gameComponents = new List<GameObject>();
+    List<GameObject> endComponents = new List<GameObject>();
+    GameObject[] playerArrows = new GameObject[4];
+
+    PlayerController player;
     float timer = 0;
+
+    Canvas canvas;
+    Text title;
     Text message;
 
-    public PlayerCanvas(Transform parentTransform, int playerId) {
-        this.playerId = playerId;
+    enum State {
+        Menu,
+        Game,
+        Minigame,
+        End
+    }
+    State state = State.Menu;
 
-        GameObject canvasObj = new GameObject("Player Canvas " + playerId);
-        Canvas playerCanvas = canvasObj.AddComponent<Canvas>();
-        playerCanvas.transform.SetParent(parentTransform);
+    public PlayerCanvas(Transform parentTransform, PlayerController player) {
+        this.player = player;
 
-        RectTransform rectTransform = playerCanvas.GetComponent<RectTransform>();
+        GameObject canvasObj = new GameObject("Player Canvas " + player.index);
+        canvas = canvasObj.AddComponent<Canvas>();
+        canvas.transform.SetParent(parentTransform);
 
-        switch (playerId) {
+        RectTransform rectTransform = canvas.GetComponent<RectTransform>();
+
+        switch (player.index) {
             case 1:
                 rectTransform.anchorMin = new Vector2(left, middle);
                 rectTransform.anchorMax = new Vector2(middle, top);
@@ -50,21 +66,23 @@ public class PlayerCanvas {
 
         GameObject bg = new GameObject();
         Image bgImage = bg.AddComponent<Image>();
-        bgImage.color = PlayerController.COLORS[playerId - 1];
+        bgImage.color = player.color;
         AddObject(bgImage, rectTransform);
         menuComponents.Add(bg);
+        endComponents.Add(bg);
 
         GameObject gameTitle = new GameObject("title");
         gameTitle.AddComponent<Text>();
-        Text titleText = gameTitle.GetComponent<Text>();
-        titleText.text = "Tied Together\n\nPress A to Start";
-        titleText.alignment = TextAnchor.MiddleCenter;
-        titleText.fontSize = 20;
-        titleText.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
-        titleText.fontStyle = FontStyle.Bold;
-        titleText.color = Color.black;
-        AddObject(titleText, rectTransform);
+        Text title = gameTitle.GetComponent<Text>();
+        title.text = "Tied Together\n\nPress A to Start";
+        title.alignment = TextAnchor.MiddleCenter;
+        title.fontSize = 20;
+        title.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
+        title.fontStyle = FontStyle.Bold;
+        title.color = Color.black;
+        AddObject(title, rectTransform);
         menuComponents.Add(gameTitle);
+        endComponents.Add(gameTitle);
 
         GameObject messageObj = new GameObject("title");
         messageObj.AddComponent<Text>();
@@ -87,10 +105,29 @@ public class PlayerCanvas {
         rectTransform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    public void HideMenu() {
+    public void StartGame() {
         foreach (GameObject o in menuComponents) {
             o.SetActive(false);
         }
+
+        state = State.Game;
+    }
+
+    public void StartMinigame() {
+        state = State.Minigame;
+    }
+
+    public void StartEnd(bool isWinner) {
+        foreach (GameObject o in gameComponents) {
+            o.SetActive(false);
+        }
+
+        title.text = isWinner ? "You Won!" : "";
+        foreach (GameObject o in menuComponents) {
+            o.SetActive(false);
+        }
+
+        state = State.End;
     }
 
     public void ShowMessage(string msg, float duration = 3f) {
@@ -105,5 +142,71 @@ public class PlayerCanvas {
                 message.text = "";
             }
         }
+
+        if (state == State.Game || state == State.Minigame) {
+            DrawPlayerArrows();
+        }
+    }
+
+    void DrawPlayerArrows() {
+        Vector3 position = player.transform.position;
+        
+        for (int i = 0; i < 4; ++i) {
+            if (i == player.index)
+                continue;
+
+            PlayerController otherPlayer = GameManager.instance.activePlayers[i];
+            if (otherPlayer != null) {
+                GameObject arrowObj = playerArrows[i];
+                if (arrowObj == null) {
+                    // Create new player arrow
+                    arrowObj = new GameObject();
+                    Image arrow = arrowObj.AddComponent<Image>();
+                    arrow.sprite = Resources.Load<Sprite>("player_arrow");
+                    arrow.color = otherPlayer.color;
+                    AddObject(arrow, canvas.GetComponent<RectTransform>());
+                    
+                    arrow.transform.SetParent(canvas.GetComponent<RectTransform>());
+                    RectTransform rectTransform = arrow.GetComponent<RectTransform>();
+                    rectTransform.sizeDelta = new Vector2(ARROW_SIZE, ARROW_SIZE);
+                    rectTransform.anchoredPosition = new Vector2(0.5f, 0.5f);
+                    rectTransform.localScale = new Vector3(1f, 1f, 1f);
+                    playerArrows[i] = arrowObj;
+                    gameComponents.Add(arrowObj);
+                }
+
+                Vector3 otherPosition = otherPlayer.transform.position;
+                if (IsPointOnScreen(otherPosition)) {
+                    // Hide arrow
+                    arrowObj.SetActive(false);
+                } else {
+                    // Show and update arrow
+                    arrowObj.SetActive(true);
+                    float dy = otherPosition.y - position.y;
+                    float dx = otherPosition.x - position.x;
+                    float angle = Mathf.Atan2(dy, dx) * 180f / Mathf.PI;
+                    arrowObj.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+                    Vector2 size = canvas.GetComponent<RectTransform>().rect.size;
+                    float x_max = size.x / 2 - ARROW_SIZE;
+                    float y_max = size.y / 2 - ARROW_SIZE;
+                    float x_proj = dx * y_max / Mathf.Abs(dy);
+                    float y_proj = dy * x_max / Mathf.Abs(dx);
+                    if (Mathf.Abs(x_proj) < x_max) {
+                        arrowObj.GetComponent<Image>().GetComponent<RectTransform>().localPosition = new Vector3(x_proj, y_max * Mathf.Sign(dy), 10);
+                    } else {
+                        arrowObj.GetComponent<Image>().GetComponent<RectTransform>().localPosition = new Vector3(x_max * Mathf.Sign(dx), y_proj, 10);
+                    }
+                }
+            }
+        }
+    }
+
+    bool IsPointOnScreen(Vector3 worldPoint) {
+        Vector3 point = player.camera.WorldToViewportPoint(worldPoint);
+        if (point.x > 0 && point.x < 1 && point.y > 0 && point.y < 1) {
+            return true;
+        }
+        return false;
     }
 }
