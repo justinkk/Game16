@@ -11,24 +11,18 @@ public class RopeController : RopeSegmentController {
     * Instantiates length number of rope segments, returns the last segment in the chain
     */
    private RopeSegmentController MakeChain(RopeSegmentController lastSegment, RopeSegmentController currSegment, int length, float segmentLength,
-         GameObject segment) {
+         GameObject segment, Vector3 location) {
       lastSegment.SetFrom(transform);
 
       for (int i = 0; i < length; i++) {
          currSegment = Instantiate(segment).GetComponent<RopeSegmentController>();
          currSegment.transform.parent = transform;
+         currSegment.transform.position = location;
 
          currSegment.SetLength(segmentLength);
          currSegment.SetFrom(lastSegment.transform);
          lastSegment.SetTo(currSegment.transform);
 
-         if (i == 0) {
-            print(currSegment.GetComponent<Rigidbody2D>());
-            print(lastSegment.GetComponent<DistanceJoint2D>().connectedBody);
-            lastSegment.GetComponent<DistanceJoint2D>().connectedBody = currSegment.GetComponent<Rigidbody2D>();
-            print(lastSegment.GetComponent<DistanceJoint2D>().connectedBody);
-
-         }
          lastSegment = currSegment;
       }
       /*
@@ -87,13 +81,18 @@ public class RopeController : RopeSegmentController {
     * Make this rope, by making the appropriate number of attached rope segments
     * numSegments must be at least 1
     */
-   public void MakeRope(Transform from, Transform to, float segmentLength, int numSegments) { 
+   public void MakeRope(Transform from, Transform to, float segmentLength, int numSegments, Vector3 location) { 
+      transform.position = location;
       segment = Resources.Load("RopeSegment") as GameObject;
+
       GameObject leftSegment = Instantiate(segment);
       fromTransform = leftSegment.transform;
+      fromTransform.position = location;
       fromTransform.parent = transform;
+
       GameObject rightSegment = Instantiate(segment);
       toTransform = rightSegment.transform;
+      toTransform.position = location;
       toTransform.parent = transform;
 
       joints = GetComponents<DistanceJoint2D>();
@@ -103,7 +102,7 @@ public class RopeController : RopeSegmentController {
       //Right side
       RopeSegmentController lastSegment = leftSegment.GetComponent<RopeSegmentController>();
       RopeSegmentController currSegment = lastSegment;
-      currSegment = MakeChain(lastSegment, currSegment, numSegments - 1, segmentLength, segment);
+      currSegment = MakeChain(lastSegment, currSegment, numSegments - 1, segmentLength, segment, location);
       currSegment.SetTo(to);
 
       joints[0].connectedBody = leftSegment.GetComponent<Rigidbody2D>();
@@ -112,7 +111,7 @@ public class RopeController : RopeSegmentController {
       //Left side
       lastSegment = rightSegment.GetComponent<RopeSegmentController>();
       currSegment = lastSegment;
-      currSegment = MakeChain(lastSegment, currSegment, numSegments - 1, segmentLength, segment);
+      currSegment = MakeChain(lastSegment, currSegment, numSegments - 1, segmentLength, segment, location);
       currSegment.SetTo(from);
 
 

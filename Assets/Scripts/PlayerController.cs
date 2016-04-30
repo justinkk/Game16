@@ -26,11 +26,12 @@ public class PlayerController : MonoBehaviour {
 	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
    //Instance variables
-    private bool isPlaying = false;
-    public Color color;
-    private PlayerCanvas canvas;
-    public new Camera camera;
+   private bool isPlaying = false;
+   public Color color;
+   private PlayerCanvas canvas;
+   public new Camera camera;
 	private Rigidbody2D body;
+   private RopeController playerRope = null;
 	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
 	private int[] statLevels;
@@ -64,6 +65,13 @@ public class PlayerController : MonoBehaviour {
 	public bool IsBoosting() {
 		return boostEnd > Time.time;
 	}
+
+   /**
+    *
+    */
+   public void SetPlayerRope(RopeController rope) {
+      playerRope = rope;
+   }
 
 	//Gives current value of a stat, given base value and current level
 	private float ComputeStat(int statNum) {
@@ -175,11 +183,11 @@ public class PlayerController : MonoBehaviour {
 
    //Called on the object's creation
    void Start() {
-        color = COLORS[index - 1];
-        canvas = UICreator.instance.addPlayerCanvas(this);
-        camera = GetComponentInChildren<Camera>();
+      color = COLORS[index - 1];
+      canvas = UICreator.instance.addPlayerCanvas(this);
+      camera = GetComponentInChildren<Camera>();
 
-        body = gameObject.GetComponent<Rigidbody2D>();
+      body = gameObject.GetComponent<Rigidbody2D>();
 
 		GameObject smoke = Resources.Load ("Smoke") as GameObject;
 		GameObject playerExhaust = Instantiate (smoke);
@@ -196,8 +204,8 @@ public class PlayerController : MonoBehaviour {
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
 
-        // FOR TESTING ONLY: (otherwise startPlayer is called in StartPlaying())
-        //GameManager.instance.startPlayer(this);
+    // FOR TESTING ONLY: (otherwise startPlayer is called in StartPlaying())
+    //GameManager.instance.startPlayer(this);
     }
 
     void StartPlaying() {
@@ -209,36 +217,36 @@ public class PlayerController : MonoBehaviour {
 	//Called once per physics step
 	void FixedUpdate() {
      if (isPlaying) {
-         Vector2 force = InputVector();
+     Vector2 force = InputVector();
 
-         //Apply force
-         if (force != Vector2.zero) {
-            body.drag = 0;
-            force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
-            body.AddForce(force * body.mass);
-         }
-         if (force == Vector2.zero || charging) {
-            //Apply brakes with linear drag
-            body.drag = ComputeStat(StatConstants.BRAKES);
-         }
+     //Apply force
+     if (force != Vector2.zero) {
+        body.drag = 0;
+        force *= ComputeStat(StatConstants.ACCELERATION) * (1.0f - ChargePercent());
+        body.AddForce(force * body.mass);
+     }
+     if (force == Vector2.zero || charging) {
+        //Apply brakes with linear drag
+        body.drag = ComputeStat(StatConstants.BRAKES);
+     }
 
-         //Handle top speed with quadratic drag
-         Vector2 currVelocity = body.velocity;
-         float magnitude = currVelocity.magnitude;
-         currVelocity.Normalize();
-         body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
+     //Handle top speed with quadratic drag
+     Vector2 currVelocity = body.velocity;
+     float magnitude = currVelocity.magnitude;
+     currVelocity.Normalize();
+     body.AddForce(-currVelocity * magnitude * magnitude * DragCoefficient() * body.mass);
 
-         TurnCharacter();
+     TurnCharacter();
      } else {
-       //Brake before you start
-       body.drag = ComputeStat(StatConstants.BRAKES);
+   //Brake before you start
+   body.drag = ComputeStat(StatConstants.BRAKES);
      }
 	}
 	
 	// Update is called once per frame
 	void Update() {
-		//Charge or boost
-		if ((index == 1 && Input.GetKeyDown("space")) || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
+	   //Charge or boost
+	   if ((index == 1 && Input.GetKeyDown("space")) || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
          if (!isPlaying) {
             StartPlaying();
          } else {
@@ -251,7 +259,7 @@ public class PlayerController : MonoBehaviour {
       }
 
 		if ((index == 1 && Input.GetKeyUp("space")) || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index))
-            && charging) {//Make sure you aren't being tricky with buttons or burned out if we implement that
+        && charging) {//Make sure you aren't being tricky with buttons or burned out if we implement that
 			Boost();
 		}
 
@@ -259,17 +267,24 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Player" && coll.gameObject.GetComponent<PlayerController>().index > index) {
-			//Instantiate(rope);
-			//TODO: Rope length
-			//TODO: Make rope only when someone boosting whom you're not attached to
-			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
-			//TODO: Replace rope if there's an old rope
-         GameObject rope = Resources.Load("Rope") as GameObject;
-         GameObject playerRope = Instantiate(rope);
-			playerRope.GetComponent<RopeController>().MakeRope(transform, coll.transform, 0.2f, 8);
+		if (coll.gameObject.tag == "Player") {
+         PlayerController otherPlayer = coll.gameObject.GetComponent<PlayerController>();
+         if ((IsBoosting() || otherPlayer.IsBoosting())
+               && otherPlayer.index > index) {
+   			//TODO: Rope length
+   			//TODO: Make rope only when someone boosting whom you're not attached to
+   			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
+   			//TODO: Replace rope if there's an old rope
+            GameObject ropePrefab = Resources.Load("Rope") as GameObject;
+            Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
+            print(location);
+            RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
+            print(rope.transform.position);
+            SetPlayerRope(rope);
+            otherPlayer.SetPlayerRope(rope);
+   			playerRope.GetComponent<RopeController>().MakeRope(transform, coll.transform, 0.2f, 8, location);
+         }
 		}
-
 	}
 
 	/*
