@@ -265,7 +265,9 @@ public class PlayerController : MonoBehaviour {
 			//TODO: Make rope only when someone boosting whom you're not attached to
 			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
 			//TODO: Replace rope if there's an old rope
-			//rope.MakeRope(transform, coll.transform, 0.2f, 2);
+         GameObject rope = Resources.Load("Rope") as GameObject;
+         GameObject playerRope = Instantiate(rope);
+			playerRope.GetComponent<RopeController>().MakeRope(transform, coll.transform, 0.2f, 8);
 		}
 
 	}

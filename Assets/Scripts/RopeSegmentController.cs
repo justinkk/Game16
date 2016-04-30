@@ -45,12 +45,28 @@ public class RopeSegmentController : MonoBehaviour {
    */
 
    /*
+    * Get which transform you're attaching to
+    */
+   public Transform GetTo() {
+      return toTransform;;
+   }
+
+   /*
+    * Get which transform you're attaching from
+    */
+   public Transform GetFrom() {
+      return fromTransform;
+   }
+
+   /*
     * Set which transform you're attaching to
     */
    public void SetTo(Transform to) {
       toTransform = to;
+      /*
       FindJoint();
       joint.connectedBody = toTransform.GetComponent<Rigidbody2D>();
+      */
    }
 
    /*
@@ -60,8 +76,8 @@ public class RopeSegmentController : MonoBehaviour {
       fromTransform = from;
    }
 	
-	// Update is called once per frame
-	void Update () {
+	 void FixedUpdate () {
+    /*
       //Turn to match rotation of left and right joints
       if (fromTransform != null && toTransform != null) {
          Vector2 delta = new Vector2(fromTransform.position.x - toTransform.position.x,
@@ -70,5 +86,6 @@ public class RopeSegmentController : MonoBehaviour {
          transform.eulerAngles = new Vector3(0, 0, angle + 90);
          //TODO: Fix angle. check out playercontroller code
       }
-	}
+      */
+	 }
 }
