@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour {
 	// Set in editor. Determines which controller to use.
 	public int index = 0;
 	// Set in editor. The rope's prefab.
-	public RopeController rope;
+	//public RopeController rope;
 
 	/**
 	 * Returns what percent charged you are
@@ -77,11 +77,26 @@ public class PlayerController : MonoBehaviour {
    }
 
    /**
+    * Returns whether you're attached by a rope to another player
+    */
+   public bool IsAttached() {
+      return attachedPlayerIndex != -1;
+   }
+
+   /**
     * Set data about which rope is being attached and who you're attaching to
     */
    public void SetPlayerRope(RopeController rope, int otherPlayerIndex) {
       playerRope = rope;
       attachedPlayerIndex = otherPlayerIndex;
+   }
+
+   /**
+    * Return the rope attached to this player
+    * null if unattached
+    */
+   public RopeController GetPlayerRope() {
+      return playerRope;
    }
 
 	//Gives current value of a stat, given base value and current level
@@ -283,9 +298,12 @@ public class PlayerController : MonoBehaviour {
          if ((IsBoosting() || otherPlayer.IsBoosting())                                                  //1. Someone's boosting
                && attachedPlayerIndex != otherPlayer.index && index != otherPlayer.GetAttachedPlayer()   //2. Not already attached
                && otherPlayer.index > index) {                                                           //Only make 1 rope
+            //Delete any old ropes
+            if (IsAttached())
+               playerRope.DeleteRope();
+            if (otherPlayer.IsAttached())
+               otherPlayer.GetPlayerRope().DeleteRope();
    			//TODO: Rope length
-   			//TODO: Make rope only when someone boosting whom you're not attached to
-   			//TODO: Drop powerup(s) if you're hit by someone you're not attached to
    			//TODO: Replace rope if there's an old rope
             GameObject ropePrefab = Resources.Load("Rope") as GameObject;
             Vector3 location = (transform.position + otherPlayer.transform.position) / 2;

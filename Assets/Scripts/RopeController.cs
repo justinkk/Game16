@@ -6,6 +6,8 @@ public class RopeController : RopeSegmentController {
    //public RopeSegmentController segment;
    private DistanceJoint2D[] joints;
    private GameObject segment;
+   private PlayerController fromPlayerController;
+   private PlayerController toPlayerController;
 
    /*
     * Instantiates length number of rope segments, returns the last segment in the chain
@@ -39,11 +41,21 @@ public class RopeController : RopeSegmentController {
       }
    }
 
+   /**
+    * Deletes this rope, and tells the attached players they aren't attached anymore
+    */
+   public void DeleteRope() {
+      fromPlayerController.SetPlayerRope(null, -1);
+      toPlayerController.SetPlayerRope(null, -1);
+
+      Destroy(gameObject);
+   }
+
    /*
     * Make this rope, by making the appropriate number of attached rope segments
     * numSegments must be at least 1
     */
-   public void MakeRope(Transform from, Transform to, float segmentLength, int numSegments, Vector3 location) { 
+   public void MakeRope(Transform fromPlayer, Transform toPlayer, float segmentLength, int numSegments, Vector3 location) { 
       transform.position = location;
       segment = Resources.Load("RopeSegment") as GameObject;
 
@@ -65,7 +77,8 @@ public class RopeController : RopeSegmentController {
       RopeSegmentController lastSegment = leftSegment.GetComponent<RopeSegmentController>();
       RopeSegmentController currSegment = lastSegment;
       currSegment = MakeChain(lastSegment, currSegment, numSegments - 1, segmentLength, segment, location);
-      currSegment.SetTo(to);
+      currSegment.SetTo(toPlayer);
+      toPlayerController = toPlayer.GetComponent<PlayerController>();
 
       joints[0].connectedBody = leftSegment.GetComponent<Rigidbody2D>();
       AttachChain(leftSegment.GetComponent<RopeSegmentController>(), numSegments);
@@ -74,7 +87,8 @@ public class RopeController : RopeSegmentController {
       lastSegment = rightSegment.GetComponent<RopeSegmentController>();
       currSegment = lastSegment;
       currSegment = MakeChain(lastSegment, currSegment, numSegments - 1, segmentLength, segment, location);
-      currSegment.SetTo(from);
+      currSegment.SetTo(fromPlayer);
+      fromPlayerController = fromPlayer.GetComponent<PlayerController>();
 
 
       joints[1].connectedBody = rightSegment.GetComponent<Rigidbody2D>();
