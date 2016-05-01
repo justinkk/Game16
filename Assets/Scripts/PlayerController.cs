@@ -196,7 +196,16 @@ public class PlayerController : MonoBehaviour {
 	private void Boost() {
       float chargePercent = ChargePercent();
 		float boostAmount = chargePercent * chargePercent * ComputeStat(StatConstants.BOOST);
-		body.AddForce(InputVector() * boostAmount * body.mass, ForceMode2D.Impulse);
+
+      Vector2 direction = InputVector();
+      if (direction == Vector2.zero) {
+         //TODO: get angle from the z euler angle
+         //direction = transform.eulerAngles.z;
+      } else {
+         direction.Normalize();
+      }
+
+		body.AddForce(direction * boostAmount * body.mass, ForceMode2D.Impulse);
 		boostEnd = Time.time + boostAmount * BOOST_TO_BOOST_TIME;
 		charging = false;
 		exhaustParticles.emissionRate = 0;
