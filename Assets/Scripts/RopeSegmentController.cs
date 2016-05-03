@@ -45,12 +45,28 @@ public class RopeSegmentController : MonoBehaviour {
    */
 
    /*
+    * Get which transform you're attaching to
+    */
+   public Transform GetTo() {
+      return toTransform;;
+   }
+
+   /*
+    * Get which transform you're attaching from
+    */
+   public Transform GetFrom() {
+      return fromTransform;
+   }
+
+   /*
     * Set which transform you're attaching to
     */
    public void SetTo(Transform to) {
       toTransform = to;
+      /*
       FindJoint();
       joint.connectedBody = toTransform.GetComponent<Rigidbody2D>();
+      */
    }
 
    /*
@@ -60,15 +76,26 @@ public class RopeSegmentController : MonoBehaviour {
       fromTransform = from;
    }
 	
-	// Update is called once per frame
-	void Update () {
+	 void FixedUpdate () {
       //Turn to match rotation of left and right joints
       if (fromTransform != null && toTransform != null) {
-         Vector2 delta = new Vector2(fromTransform.position.x - toTransform.position.x,
-            fromTransform.position.y - toTransform.position.y);
-         float angle = Vector2.Angle(delta, Vector2.up);
-         transform.eulerAngles = new Vector3(0, 0, angle + 90);
-         //TODO: Fix angle. check out playercontroller code
+         Vector2 delta = new Vector2(-fromTransform.position.y + toTransform.position.y,
+           fromTransform.position.x - toTransform.position.x);
+         if (delta != Vector2.zero) {
+          float angle = Vector2.Angle(Vector2.up, delta);
+          if (delta.x > 0)
+            angle = 360 - angle;
+
+          float angleDifference = angle - transform.eulerAngles.z;
+          if (angleDifference < -180)
+            angleDifference += 360;
+          else if (angleDifference > 180)
+            angleDifference -= 360;
+
+          //Quickly go, faster for a bigger angle difference. Biggest when difference is 180
+          GetComponent<Rigidbody2D>().angularVelocity 
+            = PlayerController.OFFSET_TO_ANGULAR_VELOCITY * Mathf.Sin(Mathf.PI * angleDifference / (360 * 2));
+        }
       }
-	}
+	 }
 }
