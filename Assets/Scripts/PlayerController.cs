@@ -239,8 +239,8 @@ public class PlayerController : MonoBehaviour {
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
 
-    // FOR TESTING ONLY: (otherwise startPlayer is called in StartPlaying())
-    //GameManager.instance.startPlayer(this);
+        // FOR TESTING ONLY: (otherwise StartPlaying() is called by button press)
+        //StartPlaying();
     }
 
     void StartPlaying() {

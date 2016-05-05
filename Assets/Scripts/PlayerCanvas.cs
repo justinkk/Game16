@@ -152,7 +152,7 @@ public class PlayerCanvas {
         Vector3 position = player.transform.position;
         
         for (int i = 0; i < 4; ++i) {
-            if (i == player.index)
+            if (i == player.index - 1)
                 continue;
 
             PlayerController otherPlayer = GameManager.instance.activePlayers[i];

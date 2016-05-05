@@ -1,4 +1,7 @@
 /Builds
 /Temp
 /Library
+/.vs
 *.pdb
+Assets/Sprites/finalTerrain.png
+Assets/Sprites/finalTerrain.png.meta
