@@ -55,6 +55,7 @@
      <Compile Include="Assets\Scripts\Powerup.cs" />
      <Compile Include="Assets\Scripts\RopeController.cs" />
      <Compile Include="Assets\Scripts\RopeSegmentController.cs" />
+     <Compile Include="Assets\Scripts\Scroll.cs" />
      <Compile Include="Assets\Scripts\StatConstants.cs" />
      <Compile Include="Assets\Scripts\TerrainController.cs" />
      <Compile Include="Assets\Scripts\UICreator.cs" />
