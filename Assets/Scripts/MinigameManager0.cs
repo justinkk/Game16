@@ -3,9 +3,12 @@ using System.Collections.Generic;
 
 public class MinigameManager0 : MinigameManager {
 
-	override public List<int> getWinners() {
-        List<int> winners = new List<int>();
-        winners.Add(2);
-        return winners;
+    override public void OnPlayerCollision(PlayerController playerA, PlayerController playerB) {
+        if (playerA.IsBoosting()) {
+            UpdateScore(playerA.index, 1);
+        }
+        if (playerB.IsBoosting()) {
+            UpdateScore(playerB.index, 1);
+        }
     }
 }

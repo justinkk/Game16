@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour {
 	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
    //Instance variables
-   private bool isPlaying = false;
+   public bool isPlaying = false;
    public Color color;
    private PlayerCanvas canvas;
    public new Camera camera;
@@ -256,14 +256,17 @@ public class PlayerController : MonoBehaviour {
       rope.MakeRope(transform, otherPlayer.transform, 0.2f, 8, location);
     }
 
+        GameManager.instance.CreatePlayer(this);
+
         // FOR TESTING ONLY: (otherwise StartPlaying() is called by button press)
-        //StartPlaying();
+        if (index < 3)
+            StartPlaying();
     }
 
     void StartPlaying() {
       isPlaying = true;
       canvas.StartGame();
-      GameManager.instance.startPlayer(this);
+      GameManager.instance.StartPlayer(this);
    }
 
 	//Called once per physics step
@@ -338,6 +341,7 @@ public class PlayerController : MonoBehaviour {
             otherPlayer.SetPlayerRope(rope, index);
    			    rope.MakeRope(transform, coll.transform, 0.2f, 8, location);
          }
+         GameManager.instance.OnPlayerCollision(this, otherPlayer);
 		}
 	}
 
@@ -350,4 +354,14 @@ public class PlayerController : MonoBehaviour {
 		int change = augmenting ? 1 : -1;
 		statLevels[stat] += change;
 	}
+
+    public void StartEnd(bool isWinner) {
+        canvas.StartEnd(isWinner);
+        Destroy(gameObject);
+    }
+
+    public void Remove() {
+        canvas.MakeBlank();
+        Destroy(gameObject);
+    }
 }

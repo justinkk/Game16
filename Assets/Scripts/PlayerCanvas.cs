@@ -13,6 +13,7 @@ public class PlayerCanvas {
 
     List<GameObject> menuComponents = new List<GameObject>();
     List<GameObject> gameComponents = new List<GameObject>();
+    List<GameObject> blankComponents = new List<GameObject>();
     List<GameObject> endComponents = new List<GameObject>();
     GameObject[] playerArrows = new GameObject[4];
 
@@ -22,14 +23,6 @@ public class PlayerCanvas {
     Canvas canvas;
     Text title;
     Text message;
-
-    enum State {
-        Menu,
-        Game,
-        Minigame,
-        End
-    }
-    State state = State.Menu;
 
     public PlayerCanvas(Transform parentTransform, PlayerController player) {
         this.player = player;
@@ -69,11 +62,12 @@ public class PlayerCanvas {
         bgImage.color = player.color;
         AddObject(bgImage, rectTransform);
         menuComponents.Add(bg);
+        blankComponents.Add(bg);
         endComponents.Add(bg);
 
         GameObject gameTitle = new GameObject("title");
         gameTitle.AddComponent<Text>();
-        Text title = gameTitle.GetComponent<Text>();
+        title = gameTitle.GetComponent<Text>();
         title.text = "Tied Together\n\nPress A to Start";
         title.alignment = TextAnchor.MiddleCenter;
         title.fontSize = 20;
@@ -109,12 +103,19 @@ public class PlayerCanvas {
         foreach (GameObject o in menuComponents) {
             o.SetActive(false);
         }
-
-        state = State.Game;
     }
 
     public void StartMinigame() {
-        state = State.Minigame;
+    }
+
+    public void MakeBlank() {
+        foreach (GameObject o in menuComponents) {
+            o.SetActive(false);
+        }
+
+        foreach (GameObject o in blankComponents) {
+            o.SetActive(true);
+        }
     }
 
     public void StartEnd(bool isWinner) {
@@ -123,11 +124,9 @@ public class PlayerCanvas {
         }
 
         title.text = isWinner ? "You Won!" : "";
-        foreach (GameObject o in menuComponents) {
-            o.SetActive(false);
+        foreach (GameObject o in endComponents) {
+            o.SetActive(true);
         }
-
-        state = State.End;
     }
 
     public void ShowMessage(string msg, float duration = 3f) {
@@ -143,7 +142,7 @@ public class PlayerCanvas {
             }
         }
 
-        if (state == State.Game || state == State.Minigame) {
+        if (GameManager.instance.state == GameManager.State.Game || GameManager.instance.state == GameManager.State.Minigame) {
             DrawPlayerArrows();
         }
     }
@@ -155,8 +154,8 @@ public class PlayerCanvas {
             if (i == player.index - 1)
                 continue;
 
-            PlayerController otherPlayer = GameManager.instance.activePlayers[i];
-            if (otherPlayer != null) {
+            PlayerController otherPlayer = GameManager.instance.players[i];
+            if (otherPlayer != null && otherPlayer.isPlaying) {
                 GameObject arrowObj = playerArrows[i];
                 if (arrowObj == null) {
                     // Create new player arrow

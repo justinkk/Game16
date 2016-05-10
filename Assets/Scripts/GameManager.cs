@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager instance = null;
 
-    public PlayerController[] activePlayers = new PlayerController[4];
+    public PlayerController[] players = new PlayerController[4];
     GameObject[] items = new GameObject[6];
     BoxCollider2D[] regions = new BoxCollider2D[6];
 
@@ -13,13 +13,13 @@ public class GameManager : MonoBehaviour {
     float gameTimeFloat = 0;
     int gameTime = 0;
 
-    enum State {
+    public enum State {
         Menu,
         Game,
         Minigame,
         End
     }
-    State state = State.Menu;
+    public State state = State.Menu;
 
     const int numMinigames = 1;
     MinigameManager minigameManager = null;
@@ -38,12 +38,15 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    public void startPlayer(PlayerController player) {
+    public void CreatePlayer(PlayerController player) {
+        players[player.index - 1] = player;
+    }
+
+    public void StartPlayer(PlayerController player) {
         if (state == State.Menu || state == State.Game) {
             if (state == State.Menu) {
                 startGame();
             }
-            activePlayers[player.index - 1] = player;
         }
     }
 
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour {
 
         if (state == State.Minigame && minigameManager != null) {
             // Provide minigame specific updates
-            minigameManager.tick();
+            minigameManager.Tick();
         }
 
         if (gameTime % 3 == 0) {
@@ -107,7 +110,7 @@ public class GameManager : MonoBehaviour {
     void startGame() {
         if (state == State.Menu) {
             state = State.Game;
-            startTimer(5 * 60);
+            startTimer(5 * 1);
         }
         items[0] = Resources.Load<GameObject>("SpeedDown");
         items[1] = Resources.Load<GameObject>("AccelUp");
@@ -126,29 +129,48 @@ public class GameManager : MonoBehaviour {
         state = State.Minigame;
         int index = (new System.Random()).Next(numMinigames);
         SceneManager.LoadScene("Minigame" + index);
+
+        foreach (PlayerController player in players) {
+            if (!player.isPlaying) {
+                player.Remove();
+            }
+        }
     }
 
     public void startMinigame(MinigameManager manager) {
         minigameManager = manager;
-        startTimer(2 * 60);
+        startTimer(2 * 5);
     }
 
     void loadEnd() {
         state = State.End;
 
-        SceneManager.LoadScene("End");
+        //SceneManager.LoadScene("End");
+
+        // We don't need a new scene. Just change the canvas.
+        startEnd();
     }
 
     public void startEnd() {
         startTimer(30);
 
-        // Display winner, scores, etc.
+        bool[] winners = minigameManager.GetWinners();
+        for (int i = 0; i < players.Length; ++i) {
+            players[i].StartEnd(winners[i]);
+        }
     }
 
     void reset() {
-        instance = new GameManager();
         Destroy(gameObject);
 
+        //SceneManager.LoadScene("MainScene");
         // TODO reset UI
+    }
+
+
+    public void OnPlayerCollision(PlayerController playerA, PlayerController playerB) {
+        if (state == State.Minigame && minigameManager != null) {
+            minigameManager.OnPlayerCollision(playerA, playerB);
+        }
     }
 }
