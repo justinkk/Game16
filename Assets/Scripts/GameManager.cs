@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour {
 
     public PlayerController[] players = new PlayerController[4];
     GameObject[] items = new GameObject[6];
-    BoxCollider2D[] regions = new BoxCollider2D[6];
+    BoxCollider2D[] regions = new BoxCollider2D[7];
 
     bool timerEnabled = false;
     float gameTimeFloat = 0;
@@ -76,17 +76,15 @@ public class GameManager : MonoBehaviour {
         if (state == State.Minigame && minigameManager != null) {
             // Provide minigame specific updates
             minigameManager.Tick();
-        }
-
-        if (gameTime % 3 == 0) {
-            int index = Random.Range(0, items.Length-1);
-            BoxCollider2D region = regions[index];
-            int x = (int)Random.Range(0, region.size.x) + (int)region.transform.position.x;
-            int y = (int)Random.Range(0, region.size.y) + (int)region.transform.position.y;
-            Debug.Log(x);
-            Debug.Log(y);
-            int itemIndex = Random.Range(0, items.Length-1);
-            Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+        } else if (state == State.Game) {
+            if (gameTime % 3 == 0) {
+                int index = Random.Range(0, items.Length-1);
+                BoxCollider2D region = regions[index];
+                float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x/2f;
+                float y = Random.Range(0, region.size.y) + region.offset.y - region.size.y/2f;
+                int itemIndex = Random.Range(0, items.Length-1);
+                Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+            }
         }
 
         // TODO update timer UI
@@ -119,7 +117,6 @@ public class GameManager : MonoBehaviour {
         items[4] = Resources.Load<GameObject>("TractUp");
         items[5] = Resources.Load<GameObject>("TractDown");
         regions = gameObject.GetComponents<BoxCollider2D>();
-        Debug.Log(regions.Length);
     }
 
     void loadMinigame() {
