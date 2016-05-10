@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance = null;
 
     public PlayerController[] activePlayers = new PlayerController[4];
+    GameObject[] items = new GameObject[6];
+    BoxCollider2D[] regions = new BoxCollider2D[6];
 
     bool timerEnabled = false;
     float gameTimeFloat = 0;
@@ -73,6 +75,17 @@ public class GameManager : MonoBehaviour {
             minigameManager.tick();
         }
 
+        if (gameTime % 3 == 0) {
+            int index = Random.Range(0, items.Length-1);
+            BoxCollider2D region = regions[index];
+            int x = (int)Random.Range(0, region.size.x) + (int)region.transform.position.x;
+            int y = (int)Random.Range(0, region.size.y) + (int)region.transform.position.y;
+            Debug.Log(x);
+            Debug.Log(y);
+            int itemIndex = Random.Range(0, items.Length-1);
+            Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+        }
+
         // TODO update timer UI
         print(gameTime);
     }
@@ -96,6 +109,14 @@ public class GameManager : MonoBehaviour {
             state = State.Game;
             startTimer(5 * 60);
         }
+        items[0] = Resources.Load<GameObject>("SpeedDown");
+        items[1] = Resources.Load<GameObject>("AccelUp");
+        items[2] = Resources.Load<GameObject>("AccelDown");
+        items[3] = Resources.Load<GameObject>("SpeedUp");
+        items[4] = Resources.Load<GameObject>("TractUp");
+        items[5] = Resources.Load<GameObject>("TractDown");
+        regions = gameObject.GetComponents<BoxCollider2D>();
+        Debug.Log(regions.Length);
     }
 
     void loadMinigame() {
