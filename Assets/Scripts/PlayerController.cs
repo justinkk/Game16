@@ -239,6 +239,23 @@ public class PlayerController : MonoBehaviour {
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
 
+    if (index == 1 || index == 3) {
+      GameObject ropePrefab = Resources.Load("Rope") as GameObject;
+      PlayerController otherPlayer;
+      if (index == 1) {
+        otherPlayer = GameObject.Find("Player2").GetComponent<PlayerController>();
+      } else {
+        otherPlayer = GameObject.Find("Player4").GetComponent<PlayerController>();
+      }
+      Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
+      RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
+
+      SetPlayerRope(rope, index + 1);
+      otherPlayer.SetPlayerRope(rope, index);
+      
+      rope.MakeRope(transform, otherPlayer.transform, 0.2f, 8, location);
+    }
+
         // FOR TESTING ONLY: (otherwise StartPlaying() is called by button press)
         //StartPlaying();
     }
@@ -312,15 +329,14 @@ public class PlayerController : MonoBehaviour {
                playerRope.DeleteRope();
             if (otherPlayer.IsAttached())
                otherPlayer.GetPlayerRope().DeleteRope();
-   			//TODO: Rope length
-   			//TODO: Replace rope if there's an old rope
+   			
             GameObject ropePrefab = Resources.Load("Rope") as GameObject;
             Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
             RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
 
             SetPlayerRope(rope, otherPlayer.index);
             otherPlayer.SetPlayerRope(rope, index);
-   			rope.MakeRope(transform, coll.transform, 0.2f, 8, location);
+   			    rope.MakeRope(transform, coll.transform, 0.2f, 8, location);
          }
 		}
 	}
