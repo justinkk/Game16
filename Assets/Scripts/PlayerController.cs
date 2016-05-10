@@ -301,7 +301,7 @@ public class PlayerController : MonoBehaviour {
 	   if ((index == 1 && Input.GetKeyDown("space")) || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
          if (!isPlaying) {
             StartPlaying();
-         } else {
+         } else if (Time.time > boostEnd) {
             Charge();
          }
 		}
