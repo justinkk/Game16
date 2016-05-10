@@ -222,7 +222,8 @@ public class PlayerController : MonoBehaviour {
       canvas = UICreator.instance.addPlayerCanvas(this);
       camera = GetComponentInChildren<Camera>();
 
-      body = gameObject.GetComponent<Rigidbody2D>();
+        gameObject.GetComponent<SpriteRenderer>().color = color;
+        body = gameObject.GetComponent<Rigidbody2D>();
 
 		GameObject smoke = Resources.Load ("Smoke") as GameObject;
 		GameObject playerExhaust = Instantiate (smoke);
