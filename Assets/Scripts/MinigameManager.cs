@@ -24,6 +24,7 @@ public class MinigameManager : MonoBehaviour {
 
     public void UpdateScore(int playerIndex, int value) {
         playerScores[playerIndex - 1] += value;
+        GameManager.instance.players[playerIndex - 1].ShowMessage("" + playerScores[playerIndex - 1]);
     }
 
     public bool[] GetWinners() {

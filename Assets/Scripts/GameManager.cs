@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour {
     float gameTimeFloat = 0;
     int gameTime = 0;
 
+    const int GAME_TIME = 5 * 60;
+    const int MINIGAME_TIME = 2 * 60;
+    const int END_TIME = 30;
+
     public enum State {
         Menu,
         Game,
@@ -108,7 +112,7 @@ public class GameManager : MonoBehaviour {
     void startGame() {
         if (state == State.Menu) {
             state = State.Game;
-            startTimer(5 * 1);
+            startTimer(GAME_TIME);
         }
         items[0] = Resources.Load<GameObject>("SpeedDown");
         items[1] = Resources.Load<GameObject>("AccelUp");
@@ -136,7 +140,7 @@ public class GameManager : MonoBehaviour {
 
     public void startMinigame(MinigameManager manager) {
         minigameManager = manager;
-        startTimer(2 * 5);
+        startTimer(MINIGAME_TIME);
     }
 
     void loadEnd() {
@@ -149,19 +153,22 @@ public class GameManager : MonoBehaviour {
     }
 
     public void startEnd() {
-        startTimer(30);
+        startTimer(END_TIME);
 
         bool[] winners = minigameManager.GetWinners();
         for (int i = 0; i < players.Length; ++i) {
-            players[i].StartEnd(winners[i]);
+            if (players[i] != null) {
+                players[i].StartEnd(winners[i]);
+            }
         }
+        UICreator.instance.refreshBorders();
     }
 
     void reset() {
+        UICreator.instance.Remove();
         Destroy(gameObject);
 
-        //SceneManager.LoadScene("MainScene");
-        // TODO reset UI
+        SceneManager.LoadScene("MainScene");
     }
 
 

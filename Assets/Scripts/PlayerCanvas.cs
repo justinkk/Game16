@@ -123,6 +123,7 @@ public class PlayerCanvas {
             o.SetActive(false);
         }
 
+        message.text = "";
         title.text = isWinner ? "You Won!" : "";
         foreach (GameObject o in endComponents) {
             o.SetActive(true);
@@ -142,7 +143,7 @@ public class PlayerCanvas {
             }
         }
 
-        if (GameManager.instance.state == GameManager.State.Game || GameManager.instance.state == GameManager.State.Minigame) {
+        if (player.isPlaying) {
             DrawPlayerArrows();
         }
     }

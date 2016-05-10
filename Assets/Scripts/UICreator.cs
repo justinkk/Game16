@@ -6,6 +6,9 @@ public class UICreator : MonoBehaviour {
 
     public static UICreator instance = null;
 
+    Image hImage;
+    Image vImage;
+
     void Awake() {
         if (instance == null)
             instance = this;
@@ -27,8 +30,8 @@ public class UICreator : MonoBehaviour {
     void addBorders(float thickness) {
         GameObject hBorder = new GameObject();
         GameObject vBorder = new GameObject();
-        Image hImage = hBorder.AddComponent<Image>();
-        Image vImage = vBorder.AddComponent<Image>();
+        hImage = hBorder.AddComponent<Image>();
+        vImage = vBorder.AddComponent<Image>();
         hImage.color = Color.black;
         vImage.color = Color.black;
         hImage.transform.SetParent(gameObject.transform);
@@ -46,9 +49,18 @@ public class UICreator : MonoBehaviour {
         vTransform.anchorMax = new Vector2(0.5f, 1f);
         vTransform.localScale = new Vector3(thickness, 1f, 1f);
     }
+
+    public void refreshBorders() {
+        hImage.transform.SetAsLastSibling();
+        vImage.transform.SetAsLastSibling();
+    }
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
+
+    public void Remove() {
+        Destroy(gameObject);
+    }
 }

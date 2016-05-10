@@ -259,8 +259,8 @@ public class PlayerController : MonoBehaviour {
         GameManager.instance.CreatePlayer(this);
 
         // FOR TESTING ONLY: (otherwise StartPlaying() is called by button press)
-        if (index < 3)
-            StartPlaying();
+        //if (index < 3)
+        //    StartPlaying();
     }
 
     void StartPlaying() {
@@ -354,6 +354,10 @@ public class PlayerController : MonoBehaviour {
 		int change = augmenting ? 1 : -1;
 		statLevels[stat] += change;
 	}
+
+    public void ShowMessage(string msg) {
+        canvas.ShowMessage(msg);
+    }
 
     public void StartEnd(bool isWinner) {
         canvas.StartEnd(isWinner);
