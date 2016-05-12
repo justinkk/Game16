@@ -53,11 +53,13 @@
      <Compile Include="Assets\Scripts\PlayerCanvas.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Powerup.cs" />
+     <Compile Include="Assets\Scripts\RollerCoasterManager.cs" />
      <Compile Include="Assets\Scripts\RopeController.cs" />
      <Compile Include="Assets\Scripts\RopeSegmentController.cs" />
      <Compile Include="Assets\Scripts\Scroll.cs" />
      <Compile Include="Assets\Scripts\StatConstants.cs" />
      <Compile Include="Assets\Scripts\TerrainController.cs" />
+     <Compile Include="Assets\Scripts\Track.cs" />
      <Compile Include="Assets\Scripts\UICreator.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
