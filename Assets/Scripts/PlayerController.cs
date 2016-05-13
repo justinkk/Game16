@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
+  private static readonly float[] ROPELESS_PENALTY = {0.4f, 0.5f, 0.5f, 0.5f}; //How much each stat is punish for being ropeless
    private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
       new Color(1f, 1.0f, 0.6f, 1f),
@@ -103,6 +104,10 @@ public class PlayerController : MonoBehaviour {
 	private float ComputeStat(int statNum) {
 		int statLevel = statLevels[statNum];
 		float baseStat = baseStats[statNum];
+    //Punish for not having a rope
+    if (attachedPlayerIndex == -1) {
+      baseStat *= ROPELESS_PENALTY[statNum];
+    }
 		float percentChange = BOOST_PER_STAT[statNum];
 		if (statLevel > 0) 
 			return baseStat * (1.0f + percentChange * statLevel);
@@ -200,7 +205,8 @@ public class PlayerController : MonoBehaviour {
       Vector2 direction = InputVector();
       if (direction == Vector2.zero) {
          //TODO: get angle from the z euler angle
-         //direction = transform.eulerAngles.z;
+         float zAngle = Mathf.Deg2Rad * transform.eulerAngles.z;
+         direction = new Vector2(-Mathf.Sin(zAngle), Mathf.Cos(zAngle));
       } else {
          direction.Normalize();
       }
