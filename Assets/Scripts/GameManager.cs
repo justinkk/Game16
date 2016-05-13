@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
+    const int RIGGED_MINIGAME_NUMBER = 2;
 
     public static GameManager instance = null;
 
@@ -13,8 +14,8 @@ public class GameManager : MonoBehaviour {
     float gameTimeFloat = 0;
     int gameTime = 0;
 
-    const int GAME_TIME = 5 * 60;
-    const int MINIGAME_TIME = 2 * 60;
+    const int GAME_TIME = 1; //5 * 60;
+    const int MINIGAME_TIME = 30; // 2 * 60;
     const int END_TIME = 30;
 
     public enum State {
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour {
     }
     public State state = State.Menu;
 
-    const int numMinigames = 1;
+    const int numMinigames = 3;
     MinigameManager minigameManager = null;
 
     void Awake()
@@ -128,7 +129,7 @@ public class GameManager : MonoBehaviour {
 
         // Transition to random minigame
         state = State.Minigame;
-        int index = (new System.Random()).Next(numMinigames);
+        int index = RIGGED_MINIGAME_NUMBER; //(new System.Random()).Next(numMinigames);
         SceneManager.LoadScene("Minigame" + index);
 
         foreach (PlayerController player in players) {
