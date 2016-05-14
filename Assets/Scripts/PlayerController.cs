@@ -4,11 +4,11 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-   private static readonly float[] DEFAULT_STATS = {15, 30, 4.5f, 0.5f}; //Default base stats
+   private static readonly float[] DEFAULT_STATS = {10, 20, 4.5f, 0.5f}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.2f}; //How much each stat changes per stat level
-  private static readonly float[] ROPELESS_PENALTY = {0.4f, 0.5f, 0.5f, 0.5f}; //How much each stat is punish for being ropeless
+  private static readonly float[] ROPELESS_PENALTY = {0.7f, 0.8f, 0.5f, 1.0f}; //How much each stat is punished for being ropeless
    private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
       new Color(1f, 1.0f, 0.6f, 1f),
@@ -246,7 +246,8 @@ public class PlayerController : MonoBehaviour {
 		statLevels = new int[StatConstants.NUM_STATS];
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
-
+    
+    //Start out with ropes attached
     if (index == 1 || index == 3) {
       GameObject ropePrefab = Resources.Load("Rope") as GameObject;
       PlayerController otherPlayer;
@@ -263,6 +264,7 @@ public class PlayerController : MonoBehaviour {
       
       rope.MakeRope(transform, otherPlayer.transform, 0.2f, 8, location);
     }
+    
 
         GameManager.instance.CreatePlayer(this);
 
