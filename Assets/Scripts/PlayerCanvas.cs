@@ -65,9 +65,8 @@ public class PlayerCanvas {
         blankComponents.Add(bg);
         endComponents.Add(bg);
 
-        GameObject gameTitle = new GameObject("title");
-        gameTitle.AddComponent<Text>();
-        title = gameTitle.GetComponent<Text>();
+        GameObject gameTitle = new GameObject();
+        title = gameTitle.AddComponent<Text>();
         title.text = "Tied Together\n\nPress A to Start";
         title.alignment = TextAnchor.MiddleCenter;
         title.fontSize = 20;
@@ -78,14 +77,15 @@ public class PlayerCanvas {
         menuComponents.Add(gameTitle);
         endComponents.Add(gameTitle);
 
-        GameObject messageObj = new GameObject("title");
-        messageObj.AddComponent<Text>();
-        message = messageObj.GetComponent<Text>();
+        GameObject messageObj = new GameObject();
+        message = messageObj.AddComponent<Text>();
         message.alignment = TextAnchor.UpperCenter;
         message.fontSize = 20;
         message.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
         message.fontStyle = FontStyle.Bold;
         message.color = Color.black;
+        Outline messageOutline = messageObj.AddComponent<Outline>();
+        messageOutline.effectColor = Color.white;
         AddObject(message, rectTransform);
     }
 
@@ -118,13 +118,13 @@ public class PlayerCanvas {
         }
     }
 
-    public void StartEnd(bool isWinner) {
+    public void StartEnd(bool isWinner, float score) {
         foreach (GameObject o in gameComponents) {
             o.SetActive(false);
         }
 
         message.text = "";
-        title.text = isWinner ? "You Won!" : "";
+        title.text = (isWinner ? "You Won!\n\n" : "") + "Score: " + score.ToString("0");
         foreach (GameObject o in endComponents) {
             o.SetActive(true);
         }

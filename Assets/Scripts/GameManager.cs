@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour {
         gameTimeFloat = seconds;
         gameTime = seconds;
         timerEnabled = true;
+        UICreator.instance.setTimer(gameTime);
     }
 
     void Update() {
@@ -76,6 +77,7 @@ public class GameManager : MonoBehaviour {
         if (gameTime <= 0) {
             transitionState();
         }
+        UICreator.instance.setTimer(gameTime);
 
         if (state == State.Minigame && minigameManager != null) {
             // Provide minigame specific updates
@@ -90,9 +92,6 @@ public class GameManager : MonoBehaviour {
                 Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
             }
         }
-
-        // TODO update timer UI
-        print(gameTime);
     }
 
     void transitionState() {
@@ -156,9 +155,10 @@ public class GameManager : MonoBehaviour {
         startTimer(END_TIME);
 
         bool[] winners = minigameManager.GetWinners();
+        float[] scores = minigameManager.playerScores;
         for (int i = 0; i < players.Length; ++i) {
             if (players[i] != null) {
-                players[i].StartEnd(winners[i]);
+                players[i].StartEnd(winners[i], scores[i]);
             }
         }
         UICreator.instance.refreshBorders();

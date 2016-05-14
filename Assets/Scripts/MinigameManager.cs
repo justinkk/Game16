@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class MinigameManager : MonoBehaviour {
 
-    protected int[] playerScores = new int[4];
+    public float[] playerScores = new float[4];
 
     void Awake() {
         DontDestroyOnLoad(gameObject);
@@ -22,14 +22,14 @@ public class MinigameManager : MonoBehaviour {
 
     virtual public void OnPlayerCollision(PlayerController playerA, PlayerController playerB) { }
 
-    public void UpdateScore(int playerIndex, int value) {
+    public void UpdateScore(int playerIndex, float value) {
         playerScores[playerIndex - 1] += value;
         GameManager.instance.players[playerIndex - 1].ShowMessage("" + playerScores[playerIndex - 1]);
     }
 
     public bool[] GetWinners() {
-        int maxScore = -1;
-        foreach (int score in playerScores) {
+        float maxScore = -1;
+        foreach (float score in playerScores) {
             if (score > maxScore) {
                 maxScore = score;
             }

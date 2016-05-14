@@ -9,6 +9,8 @@ public class UICreator : MonoBehaviour {
     Image hImage;
     Image vImage;
 
+    Text timer;
+
     void Awake() {
         if (instance == null)
             instance = this;
@@ -21,6 +23,7 @@ public class UICreator : MonoBehaviour {
     // Use this for initialization
     void Start () {
         addBorders(0.05f);
+        addTimer();
 	}
 
 	public PlayerCanvas addPlayerCanvas(PlayerController player) {
@@ -50,9 +53,36 @@ public class UICreator : MonoBehaviour {
         vTransform.localScale = new Vector3(thickness, 1f, 1f);
     }
 
+    void addTimer() {
+        GameObject timerObj = new GameObject();
+        timer = timerObj.AddComponent<Text>();
+        timer.alignment = TextAnchor.MiddleCenter;
+        timer.fontSize = 30;
+        timer.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
+        timer.fontStyle = FontStyle.Bold;
+        timer.color = Color.white;
+        Outline timerOutline = timerObj.AddComponent<Outline>();
+        timerOutline.effectColor = Color.black;
+
+        timer.transform.SetParent(gameObject.transform);
+        RectTransform rectTransform = timer.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = gameObject.GetComponent<RectTransform>().rect.size;
+        rectTransform.anchoredPosition = new Vector2(0.5f, 0.5f);
+        rectTransform.localScale = new Vector3(1f, 1f, 1f);
+    }
+
+    public void setTimer(int time) {
+        if (time < 0) {
+            timer.text = "";
+        } else {
+            timer.text = (time / 60) + ":" + (time % 60).ToString("00");
+        }
+    }
+
     public void refreshBorders() {
         hImage.transform.SetAsLastSibling();
         vImage.transform.SetAsLastSibling();
+        timer.transform.SetAsLastSibling();
     }
 	
 	// Update is called once per frame

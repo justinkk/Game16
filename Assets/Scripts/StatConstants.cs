@@ -8,4 +8,6 @@ public static class StatConstants {
 	public const int ACCELERATION = 1;
 	public const int BRAKES = 2;
 	public const int BOOST = 3;
+
+    public static readonly string[] NAMES = { "Speed", "Acceleration", "Brakes", "Boost" };
 }

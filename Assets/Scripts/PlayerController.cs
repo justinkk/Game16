@@ -360,14 +360,17 @@ public class PlayerController : MonoBehaviour {
 	public void ChangeStat(int stat, bool augmenting) {
 		int change = augmenting ? 1 : -1;
 		statLevels[stat] += change;
+
+        string sign = augmenting ? "+" : "-";
+        ShowMessage(sign + StatConstants.NAMES[stat]);
 	}
 
     public void ShowMessage(string msg) {
         canvas.ShowMessage(msg);
     }
 
-    public void StartEnd(bool isWinner) {
-        canvas.StartEnd(isWinner);
+    public void StartEnd(bool isWinner, float score) {
+        canvas.StartEnd(isWinner, score);
         Destroy(gameObject);
     }
 
