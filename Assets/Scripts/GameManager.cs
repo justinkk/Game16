@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
     int gameTime = 0;
 
     const int GAME_TIME = 5 * 60;
+    const int GAME_WARNING = 10;
     const int MINIGAME_TIME = 2 * 60;
     const int END_TIME = 30;
 
@@ -25,7 +26,8 @@ public class GameManager : MonoBehaviour {
     }
     public State state = State.Menu;
 
-    const int numMinigames = 1;
+    static readonly string[] MINIGAME_NAMES = { "Bumper Cars" };
+    int minigameIndex = 0;
     MinigameManager minigameManager = null;
 
     void Awake()
@@ -91,6 +93,15 @@ public class GameManager : MonoBehaviour {
                 int itemIndex = Random.Range(0, items.Length-1);
                 Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
             }
+
+            if (gameTime == GAME_WARNING) {
+                minigameIndex = (new System.Random()).Next(MINIGAME_NAMES.Length);
+                foreach (PlayerController player in players) {
+                    if (player.isPlaying) {
+                        player.ShowMessage("Prepare for\n" + MINIGAME_NAMES[minigameIndex], 5f);
+                    }
+                }
+            }
         }
     }
 
@@ -127,8 +138,7 @@ public class GameManager : MonoBehaviour {
 
         // Transition to random minigame
         state = State.Minigame;
-        int index = (new System.Random()).Next(numMinigames);
-        SceneManager.LoadScene("Minigame" + index);
+        SceneManager.LoadScene("Minigame" + minigameIndex);
 
         foreach (PlayerController player in players) {
             if (!player.isPlaying) {

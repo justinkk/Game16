@@ -368,8 +368,8 @@ public class PlayerController : MonoBehaviour {
         ShowMessage(sign + StatConstants.NAMES[stat]);
 	}
 
-    public void ShowMessage(string msg) {
-        canvas.ShowMessage(msg);
+    public void ShowMessage(string msg, float duration = 3f) {
+        canvas.ShowMessage(msg, duration);
     }
 
     public void StartEnd(bool isWinner, float score) {
