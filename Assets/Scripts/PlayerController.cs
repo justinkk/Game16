@@ -4,10 +4,10 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-   private static readonly float[] DEFAULT_STATS = {15, 30, 4.5f, 90}; //Default base stats
+   private static readonly float[] DEFAULT_STATS = {15, 30, 4.5f, 0.5f}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
-	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.1f}; //How much each stat changes per stat level
+	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.2f}; //How much each stat changes per stat level
   private static readonly float[] ROPELESS_PENALTY = {0.4f, 0.5f, 0.5f, 0.5f}; //How much each stat is punish for being ropeless
    private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
@@ -20,9 +20,9 @@ public class PlayerController : MonoBehaviour {
 
 	//Brakes stat computes drag amount
 	//Multiply by this to get %charged per second
-	public const float BRAKES_TO_CHARGE_SPEED = 0.8f;
+	public const float BRAKES_TO_CHARGE_SPEED = 0.75f;
 	//Multiplier for how long your boost lasts depending on boost stat
-	public const float BOOST_TO_BOOST_TIME = 0.015f;
+	public const float BOOST_TO_BOOST_TIME = 0.375f;
 	//How much angular velocity should be applied, based on degrees you're off
 	public static readonly float OFFSET_TO_ANGULAR_VELOCITY = 4 * DEGREES_IN_CIRCLE;
 
@@ -199,20 +199,21 @@ public class PlayerController : MonoBehaviour {
 	 * Tell the character to boost
 	 */
 	private void Boost() {
-      float chargePercent = ChargePercent();
-		float boostAmount = chargePercent * chargePercent * ComputeStat(StatConstants.BOOST);
+    float chargePercent = ChargePercent();
+    float boostPercent = chargePercent * chargePercent * (1.0f + ComputeStat(StatConstants.BOOST));
+		float boostAmount = boostPercent * ComputeStat(StatConstants.SPEED);
 
-      Vector2 direction = InputVector();
-      if (direction == Vector2.zero) {
-         //TODO: get angle from the z euler angle
-         float zAngle = Mathf.Deg2Rad * transform.eulerAngles.z;
-         direction = new Vector2(-Mathf.Sin(zAngle), Mathf.Cos(zAngle));
-      } else {
-         direction.Normalize();
-      }
+    Vector2 direction = InputVector();
+    if (direction == Vector2.zero) {
+       //TODO: get angle from the z euler angle
+       float zAngle = Mathf.Deg2Rad * transform.eulerAngles.z;
+       direction = new Vector2(-Mathf.Sin(zAngle), Mathf.Cos(zAngle));
+    } else {
+       direction.Normalize();
+    }
 
 		body.AddForce(direction * boostAmount * body.mass, ForceMode2D.Impulse);
-		boostEnd = Time.time + boostAmount * BOOST_TO_BOOST_TIME;
+		boostEnd = Time.time + boostPercent * BOOST_TO_BOOST_TIME;
 		charging = false;
 		exhaustParticles.emissionRate = 0;
 
