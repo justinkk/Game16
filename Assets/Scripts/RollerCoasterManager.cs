@@ -18,11 +18,7 @@ public class RollerCoasterManager : MonoBehaviour
 	
 		createTrack ();
 	}
-
-	void Update() {
-		rollerCoasterCarObject.transform.localPosition = rollerCoasterCarObject.transform.localPosition + Vector3.zero;
-	}
-
+		
 	private void addCar() {
 		rollerCoasterCarObject = Instantiate (rollerCoasterCar);
 		rollerCoasterCarObject.transform.SetParent (gameObject.transform);

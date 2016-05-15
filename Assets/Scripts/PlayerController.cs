@@ -333,25 +333,42 @@ public class PlayerController : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Player") {
-         PlayerController otherPlayer = coll.gameObject.GetComponent<PlayerController>();                //Attach rope if:
-         if ((IsBoosting() || otherPlayer.IsBoosting())                                                  //1. Someone's boosting
-               && attachedPlayerIndex != otherPlayer.index && index != otherPlayer.GetAttachedPlayer()   //2. Not already attached
-               && otherPlayer.index > index) {                                                           //Only make 1 rope
-            //Delete any old ropes
-            if (IsAttached())
-               playerRope.DeleteRope();
-            if (otherPlayer.IsAttached())
-               otherPlayer.GetPlayerRope().DeleteRope();
+			PlayerController otherPlayer = coll.gameObject.GetComponent<PlayerController> ();                //Attach rope if:
+			if ((IsBoosting () || otherPlayer.IsBoosting ())//1. Someone's boosting
+			          && attachedPlayerIndex != otherPlayer.index && index != otherPlayer.GetAttachedPlayer ()//2. Not already attached
+			          && otherPlayer.index > index) {                                                           //Only make 1 rope
+				//Delete any old ropes
+				if (IsAttached ())
+					playerRope.DeleteRope ();
+				if (otherPlayer.IsAttached ())
+					otherPlayer.GetPlayerRope ().DeleteRope ();
    			
-            GameObject ropePrefab = Resources.Load("Rope") as GameObject;
-            Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
-            RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
+				GameObject ropePrefab = Resources.Load ("Rope") as GameObject;
+				Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
+				RopeController rope = Instantiate (ropePrefab).GetComponent<RopeController> ();
 
-            SetPlayerRope(rope, otherPlayer.index);
-            otherPlayer.SetPlayerRope(rope, index);
-   			    rope.MakeRope(transform, coll.transform, 0.2f, 8, location);
-         }
-         GameManager.instance.OnPlayerCollision(this, otherPlayer);
+				SetPlayerRope (rope, otherPlayer.index);
+				otherPlayer.SetPlayerRope (rope, index);
+				rope.MakeRope (transform, coll.transform, 0.2f, 8, location);
+			}
+			GameManager.instance.OnPlayerCollision (this, otherPlayer);
+		} else if (coll.gameObject.tag == "RollercoasterCar") {
+			if (IsBoosting()) {
+				if (gameObject.transform.parent == coll.gameObject.transform) {
+					gameObject.transform.SetParent (null);
+					Vector2 input = InputVector () * 2;
+					gameObject.transform.position = coll.gameObject.transform.position + new Vector3 (input.x, input.y, 0);
+				} else {
+					gameObject.transform.SetParent (coll.gameObject.transform);
+					gameObject.transform.localPosition = Vector3.zero;
+					Rigidbody2D rollercoasterRigidbody = coll.gameObject.GetComponent<Rigidbody2D> ();
+					rollercoasterRigidbody.velocity = Vector3.zero;
+					rollercoasterRigidbody.angularVelocity = 0f;
+					boostEnd = -100;
+				}
+
+			}
+
 		}
 	}
 
