@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Collections;
 public class Track {
 
-	GameObject track;
-	GameObject previousPiece;
-	bool isCurve;
-	int direction;
-	bool counterClockWise;
-	Track prev;
-//
-//	float width;
-//	float height;
+	public GameObject track;
+	public GameObject previousPiece;
+	public bool isCurve;
+	public int direction;
+	public bool counterClockWise;
+	public Track prev;
+	public Track next;
 
 	public const int NORTH = 3;
 	public const int EAST = 0;
@@ -24,6 +22,9 @@ public class Track {
 		this.isCurve = isCurve;
 		this.prev = prev;
 		this.direction = direction;
+		if (prev != null) {
+			prev.next = this;
+		}
 
 		this.track.transform.SetParent (parentTransform);
 		counterClockWise = false;
@@ -67,8 +68,13 @@ public class Track {
 			}
 
 			track.transform.localPosition = finalPosition;
-
 		}
+			
+		track.layer = 9;
+		TrackTrigger trackTrigger = track.AddComponent<TrackTrigger> ();
+		trackTrigger.setTrack (this);
+
+
 	}
 
 	private Vector3 adjustPosition(Vector3 prevPosition, int direction, GameObject curve, GameObject line) {
@@ -112,8 +118,6 @@ public class Track {
 			prevPosition.y = prevPosition.y - height;
 			break; 
 		}
-
-
 		return prevPosition;
 	}
 

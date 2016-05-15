@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//Constants
-   private static readonly float[] DEFAULT_STATS = {10, 20, 4.5f, 0.5f}; //Default base stats
+   private static readonly float[] DEFAULT_STATS = {30, 60, 12.5f, 1.5f}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.2f}; //How much each stat changes per stat level
@@ -248,23 +248,23 @@ public class PlayerController : MonoBehaviour {
 		baseStats = (float[])DEFAULT_STATS.Clone();
     
     //Start out with ropes attached
-    if (index == 1 || index == 3) {
-      GameObject ropePrefab = Resources.Load("Rope") as GameObject;
-      PlayerController otherPlayer;
-      if (index == 1) {
-        otherPlayer = GameObject.Find("Player2").GetComponent<PlayerController>();
-      } else {
-        otherPlayer = GameObject.Find("Player4").GetComponent<PlayerController>();
-      }
-      Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
-      RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
-
-      SetPlayerRope(rope, index + 1);
-      otherPlayer.SetPlayerRope(rope, index);
-      
-      rope.MakeRope(transform, otherPlayer.transform, 0.2f, 8, location);
-    }
-    
+//    if (index == 1 || index == 3) {
+//      GameObject ropePrefab = Resources.Load("Rope") as GameObject;
+//      PlayerController otherPlayer;
+//      if (index == 1) {
+//        otherPlayer = GameObject.Find("Player2").GetComponent<PlayerController>();
+//      } else {
+//        otherPlayer = GameObject.Find("Player4").GetComponent<PlayerController>();
+//      }
+//      Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
+//      RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
+//
+//      SetPlayerRope(rope, index + 1);
+//      otherPlayer.SetPlayerRope(rope, index);
+//      
+//      rope.MakeRope(transform, otherPlayer.transform, 0.2f, 8, location);
+//    }
+//    
 
         GameManager.instance.CreatePlayer(this);
 
