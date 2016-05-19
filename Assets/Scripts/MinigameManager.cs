@@ -3,7 +3,11 @@ using System.Collections.Generic;
 
 public class MinigameManager : MonoBehaviour {
 
+    public GameObject[] playerSpawnpoints = new GameObject[4];
+
     public float[] playerScores = new float[4];
+
+    virtual public string GetInstruction() { return ""; }
 
     void Awake() {
         DontDestroyOnLoad(gameObject);
@@ -11,7 +15,19 @@ public class MinigameManager : MonoBehaviour {
     }
 
     // Use this for initialization
-    virtual public  void Start () { }
+    public  void Start () {
+        for (int i = 0; i < playerSpawnpoints.Length; ++i) {
+            PlayerController player = GameManager.instance.players[i];
+            if (player != null && player.isPlaying) {
+                player.transform.position = playerSpawnpoints[i].transform.position;
+                player.transform.rotation = playerSpawnpoints[i].transform.rotation;
+                player.body.velocity = Vector2.zero;
+                player.body.angularVelocity = 0;
+                player.ResetAttachedPlayer();
+            }
+            Destroy(playerSpawnpoints[i]);
+        }
+    }
 	
 	// Update is called once per frame
 	virtual public void Update () { }

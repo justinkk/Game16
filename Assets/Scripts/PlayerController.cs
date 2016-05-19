@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour {
    public Color color;
    private PlayerCanvas canvas;
    public new Camera camera;
-	private Rigidbody2D body;
+   public Rigidbody2D body;
 
    private RopeController playerRope = null;
    private int attachedPlayerIndex = -1;
@@ -75,12 +75,20 @@ public class PlayerController : MonoBehaviour {
     */
    public int GetAttachedPlayer() {
       return attachedPlayerIndex;
-   }
+    }
 
-   /**
-    * Returns whether you're attached by a rope to another player
-    */
-   public bool IsAttached() {
+    /**
+     * Resets the attached player index
+     * Does not affect the rope
+     */
+    public void ResetAttachedPlayer() {
+        attachedPlayerIndex = -1;
+    }
+
+    /**
+     * Returns whether you're attached by a rope to another player
+     */
+    public bool IsAttached() {
       return attachedPlayerIndex != -1;
    }
 
@@ -313,7 +321,9 @@ public class PlayerController : MonoBehaviour {
 	   //Charge or boost
 	   if ((index == 1 && Input.GetKeyDown("space")) || Input.GetKeyDown(KeyCodes.GetA(index)) || Input.GetKeyDown(KeyCodes.GetZ(index))) {
          if (!isPlaying) {
-            StartPlaying();
+                if (GameManager.instance.CanJoin()) {
+                    StartPlaying();
+                }
          } else if (Time.time > boostEnd) {
             Charge();
          }

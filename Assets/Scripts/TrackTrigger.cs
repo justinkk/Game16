@@ -23,8 +23,7 @@ public class TrackTrigger : MonoBehaviour
 	}
 
 	void OnTriggerStay2D(Collider2D other) {
-		Debug.Log ("HELLLOO");
-		Debug.Log (track);
+		//Debug.Log (track);
 
 //		gameObject.GetComponents<Collision2D> ();
 
@@ -33,7 +32,7 @@ public class TrackTrigger : MonoBehaviour
 		}
 
 		Vector3 forceDirection = track.next.track.transform.localPosition - track.track.transform.localPosition;
-		Debug.Log (forceDirection);
+		//Debug.Log (forceDirection);
 
 		if (track.isCurve) {
 			if (track.direction == Track.EAST || track.direction == Track.WEST) {

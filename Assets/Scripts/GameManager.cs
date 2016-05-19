@@ -13,10 +13,15 @@ public class GameManager : MonoBehaviour {
     float gameTimeFloat = 0;
     int gameTime = 0;
 
-    const int GAME_TIME = 5 * 60;
-    const int GAME_WARNING = 10;
+    const int GAME_TIME = 5 * 3;//60;
+    const int GAME_HELP1_TIME = GAME_TIME - 5;
+    const int MINIGAME_WARNING_TIME = 10;
     const int MINIGAME_TIME = 2 * 60;
     const int END_TIME = 30;
+
+    const string GAME_HELP1 = "Try ramming into each other";
+    const string GAME_HELP2 = "Now explore the amusement park";
+    const string MINIGAME_WARNING = "Prepare for\n";
 
     public enum State {
         Menu,
@@ -25,6 +30,8 @@ public class GameManager : MonoBehaviour {
         End
     }
     public State state = State.Menu;
+
+    public GameObject tireBox;
 
     static readonly string[] MINIGAME_NAMES = { "Bumper Cars" };
     int minigameIndex = 0;
@@ -48,11 +55,13 @@ public class GameManager : MonoBehaviour {
         players[player.index - 1] = player;
     }
 
+    public bool CanJoin() {
+        return state == State.Menu || state == State.Game;
+    }
+
     public void StartPlayer(PlayerController player) {
-        if (state == State.Menu || state == State.Game) {
-            if (state == State.Menu) {
-                startGame();
-            }
+        if (state == State.Menu) {
+            startGame();
         }
     }
 
@@ -86,19 +95,28 @@ public class GameManager : MonoBehaviour {
             minigameManager.Tick();
         } else if (state == State.Game) {
             if (gameTime % 3 == 0) {
-                int index = Random.Range(0, items.Length-1);
+                int index = Random.Range(0, regions.Length-1);
                 BoxCollider2D region = regions[index];
-                float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x/2f;
-                float y = Random.Range(0, region.size.y) + region.offset.y - region.size.y/2f;
-                int itemIndex = Random.Range(0, items.Length-1);
-                Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+                if (region != null) {
+                    float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x / 2f;
+                    float y = Random.Range(0, region.size.y) + region.offset.y - region.size.y / 2f;
+                    int itemIndex = Random.Range(0, items.Length - 1);
+                    Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+                }
             }
 
-            if (gameTime == GAME_WARNING) {
+            if (gameTime == GAME_HELP1_TIME && tireBox != null) {
+                foreach (PlayerController player in players) {
+                    if (player.isPlaying) {
+                        player.ShowMessage(GAME_HELP1, 5f);
+                    }
+                }
+            }
+            else if (gameTime == MINIGAME_WARNING_TIME) {
                 minigameIndex = (new System.Random()).Next(MINIGAME_NAMES.Length);
                 foreach (PlayerController player in players) {
                     if (player.isPlaying) {
-                        player.ShowMessage("Prepare for\n" + MINIGAME_NAMES[minigameIndex], 5f);
+                        player.ShowMessage(MINIGAME_WARNING + MINIGAME_NAMES[minigameIndex], MINIGAME_WARNING_TIME);
                     }
                 }
             }
@@ -150,6 +168,12 @@ public class GameManager : MonoBehaviour {
     public void startMinigame(MinigameManager manager) {
         minigameManager = manager;
         startTimer(MINIGAME_TIME);
+        
+        foreach (PlayerController player in players) {
+            if (player != null && player.isPlaying) {
+                player.ShowMessage(minigameManager.GetInstruction(), 5f);
+            }
+        }
     }
 
     void loadEnd() {
@@ -183,7 +207,18 @@ public class GameManager : MonoBehaviour {
 
 
     public void OnPlayerCollision(PlayerController playerA, PlayerController playerB) {
-        if (state == State.Minigame && minigameManager != null) {
+        if (state == State.Game) {
+            if (tireBox != null && playerA.IsBoosting()) {
+                Destroy(tireBox);
+                tireBox = null;
+                
+                foreach (PlayerController player in players) {
+                    if (player.isPlaying) {
+                        player.ShowMessage(GAME_HELP2, 5f);
+                    }
+                }
+            }
+        } else if (state == State.Minigame && minigameManager != null) {
             minigameManager.OnPlayerCollision(playerA, playerB);
         }
     }

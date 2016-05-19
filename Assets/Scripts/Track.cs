@@ -82,10 +82,10 @@ public class Track {
 			- line.GetComponent<SpriteRenderer>().bounds.size.x ) / 4;
 		float heightAdjustment = (curve.GetComponent<SpriteRenderer> ().bounds.size.y 
 			- line.GetComponent<SpriteRenderer> ().bounds.size.y) / 4;
-		Debug.LogWarning (widthAdjustment);
+		//Debug.LogWarning (widthAdjustment);
 		switch (direction) {
 		case EAST:
-			Debug.LogWarning ("HEL:");
+			//Debug.LogWarning ("HEL:");
 			prevPosition.x = prevPosition.x + widthAdjustment;
 			break;
 		case WEST:
