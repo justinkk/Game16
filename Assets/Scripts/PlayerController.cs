@@ -277,7 +277,7 @@ public class PlayerController : MonoBehaviour {
         GameManager.instance.CreatePlayer(this);
 
         // FOR TESTING ONLY: (otherwise StartPlaying() is called by button press)
-        //if (index < 3)
+        //if (index < 4)
         //    StartPlaying();
     }
 

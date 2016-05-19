@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class MinigameManager : MonoBehaviour {
+public abstract class MinigameManager : MonoBehaviour {
 
     public GameObject[] playerSpawnpoints = new GameObject[4];
 
     public float[] playerScores = new float[4];
 
-    virtual public string GetInstruction() { return ""; }
+    abstract public string GetInstruction();
 
     void Awake() {
         DontDestroyOnLoad(gameObject);
@@ -15,7 +15,7 @@ public class MinigameManager : MonoBehaviour {
     }
 
     // Use this for initialization
-    public  void Start () {
+    virtual public void Start () {
         for (int i = 0; i < playerSpawnpoints.Length; ++i) {
             PlayerController player = GameManager.instance.players[i];
             if (player != null && player.isPlaying) {

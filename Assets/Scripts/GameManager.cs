@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour {
     float gameTimeFloat = 0;
     int gameTime = 0;
 
-    const int GAME_TIME = 5 * 3;//60;
+    const int GAME_TIME = 5 * 60;
     const int GAME_HELP1_TIME = GAME_TIME - 5;
     const int MINIGAME_WARNING_TIME = 10;
     const int MINIGAME_TIME = 2 * 60;
@@ -33,7 +33,10 @@ public class GameManager : MonoBehaviour {
 
     public GameObject tireBox;
 
-    static readonly string[] MINIGAME_NAMES = { "Bumper Cars" };
+    static readonly string[] MINIGAME_NAMES = {
+        "Bumper Cars",
+        "The Maze"
+    };
     int minigameIndex = 0;
     MinigameManager minigameManager = null;
 
@@ -173,6 +176,13 @@ public class GameManager : MonoBehaviour {
             if (player != null && player.isPlaying) {
                 player.ShowMessage(minigameManager.GetInstruction(), 5f);
             }
+        }
+    }
+
+    public void endMinigame() {
+        if (state == State.Minigame) {
+            gameTime = 0;
+            tick();
         }
     }
 
