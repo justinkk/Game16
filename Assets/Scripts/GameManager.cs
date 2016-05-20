@@ -239,7 +239,7 @@ public class GameManager : MonoBehaviour {
                     }
                 }
             } else if (playerA.IsBoosting()) {
-                if (playerA.GetAttachedPlayer() == playerB.index) {
+                if (playerA.DidChangeAttachedPlayer()) {
                     float x = playerB.body.transform.position.x + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
                     float y = playerB.body.transform.position.y + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
                     spawnRandomItemAtLocation(x, y);
