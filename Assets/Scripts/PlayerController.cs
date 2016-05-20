@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour {
    public Rigidbody2D body;
 
    private RopeController playerRope = null;
+   private bool didChangeAttachedPlayer = false;
    private int attachedPlayerIndex = -1;
 	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
@@ -84,6 +85,13 @@ public class PlayerController : MonoBehaviour {
     public void ResetAttachedPlayer() {
         attachedPlayerIndex = -1;
     }
+
+    /**
+     * Returns whether you're attached by a rope to another player
+     */
+    public bool DidChangeAttachedPlayer() {
+      return didChangeAttachedPlayer;
+   }
 
     /**
      * Returns whether you're attached by a rope to another player
@@ -353,6 +361,9 @@ public class PlayerController : MonoBehaviour {
 				if (otherPlayer.IsAttached ())
 					otherPlayer.GetPlayerRope ().DeleteRope ();
    			
+				//Mark as new player attached through rope
+				didChangeAttachedPlayer = true;
+
 				GameObject ropePrefab = Resources.Load ("Rope") as GameObject;
 				Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
 				RopeController rope = Instantiate (ropePrefab).GetComponent<RopeController> ();
@@ -360,6 +371,8 @@ public class PlayerController : MonoBehaviour {
 				SetPlayerRope (rope, otherPlayer.index);
 				otherPlayer.SetPlayerRope (rope, index);
 				rope.MakeRope (transform, coll.transform, 0.2f, 8, location);
+			} else if (attachedPlayerIndex == otherPlayer.index) {
+				didChangeAttachedPlayer = false;
 			}
 			GameManager.instance.OnPlayerCollision (this, otherPlayer);
 		} else if (coll.gameObject.tag == "RollercoasterCar") {
