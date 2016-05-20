@@ -85,6 +85,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    void spawnRandomItemAtLocation(float x, float y) {
+        int itemIndex = Random.Range(0, items.Length - 1);
+        Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+    }
+
     // Called once per second when the game is running.
     // Check state for logic specific to game/minigame
     void tick() {
@@ -103,8 +108,7 @@ public class GameManager : MonoBehaviour {
                 if (region != null) {
                     float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x / 2f;
                     float y = Random.Range(0, region.size.y) + region.offset.y - region.size.y / 2f;
-                    int itemIndex = Random.Range(0, items.Length - 1);
-                    Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+                    spawnRandomItemAtLocation(x, y);
                 }
             }
 
@@ -215,6 +219,13 @@ public class GameManager : MonoBehaviour {
         SceneManager.LoadScene("MainScene");
     }
 
+    float randomNegativeOneOrPositiveOne() {
+        float r = Random.Range(0, 1);
+        if (r > 0.5f) {
+            return 1.0f;
+        }
+        return -1.0f;
+    }
 
     public void OnPlayerCollision(PlayerController playerA, PlayerController playerB) {
         if (state == State.Game) {
@@ -226,6 +237,12 @@ public class GameManager : MonoBehaviour {
                     if (player.isPlaying) {
                         player.ShowMessage(GAME_HELP2, 5f);
                     }
+                }
+            } else if (playerA.IsBoosting()) {
+                if (playerA.GetAttachedPlayer() == playerB.index) {
+                    float x = playerB.body.transform.position.x + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
+                    float y = playerB.body.transform.position.y + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
+                    spawnRandomItemAtLocation(x, y);
                 }
             }
         } else if (state == State.Minigame && minigameManager != null) {
