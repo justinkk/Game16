@@ -166,7 +166,9 @@ public class GameManager : MonoBehaviour {
         SceneManager.LoadScene("Minigame" + minigameIndex);
 
         foreach (PlayerController player in players) {
-            if (!player.isPlaying) {
+            if (player.isPlaying) {
+                player.gameObject.transform.SetParent(null);
+            } else {
                 player.Remove();
             }
         }
