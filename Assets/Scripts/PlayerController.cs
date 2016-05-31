@@ -404,6 +404,8 @@ public class PlayerController : MonoBehaviour {
 		int change = augmenting ? 1 : -1;
 		statLevels[stat] += change;
 
+        canvas.SetStat(stat, statLevels[stat]);
+
         string sign = augmenting ? "+" : "-";
         ShowMessage(sign + StatConstants.NAMES[stat]);
 	}

@@ -10,12 +10,16 @@ public class PlayerCanvas {
     float left = 0f;
 
     const float ARROW_SIZE = 20;
+    const float DIAL_MAX_SIZE = 40;
+    const float DIAL_MIN_SIZE = 10;
+    const int DIAL_MAX_STAT = 10;
 
     List<GameObject> menuComponents = new List<GameObject>();
     List<GameObject> gameComponents = new List<GameObject>();
     List<GameObject> blankComponents = new List<GameObject>();
     List<GameObject> endComponents = new List<GameObject>();
     GameObject[] playerArrows = new GameObject[4];
+    GameObject[] statDials = new GameObject[4];
 
     PlayerController player;
     float timer = 0;
@@ -87,6 +91,28 @@ public class PlayerCanvas {
         Outline messageOutline = messageObj.AddComponent<Outline>();
         messageOutline.effectColor = Color.white;
         AddObject(message, rectTransform);
+
+        for (int i = 0; i < 4; ++i) {
+            GameObject statDial = new GameObject();
+            Image dial = statDial.AddComponent<Image>();
+            dial.sprite = Resources.Load<Sprite>("stat_dial");
+            switch (i) {
+                case 0: dial.color = Color.black;  break;
+                case 1: dial.color = Color.red;    break;
+                case 2: dial.color = Color.yellow; break;
+                case 3: dial.color = Color.green;  break;
+            }
+            AddObject(dial, canvas.GetComponent<RectTransform>());
+
+            dial.transform.SetParent(canvas.GetComponent<RectTransform>());
+
+            statDials[i] = statDial;
+            SetStat(i, 0);
+
+            statDial.SetActive(false);
+            gameComponents.Add(statDial);
+            endComponents.Add(statDial);
+        }
     }
 
     void AddObject(Component obj, RectTransform parentTransform) {
@@ -103,6 +129,9 @@ public class PlayerCanvas {
         foreach (GameObject o in menuComponents) {
             o.SetActive(false);
         }
+        foreach (GameObject o in gameComponents) {
+            o.SetActive(true);
+        }
     }
 
     public void StartMinigame() {
@@ -110,6 +139,10 @@ public class PlayerCanvas {
 
     public void MakeBlank() {
         foreach (GameObject o in menuComponents) {
+            o.SetActive(false);
+        }
+
+        foreach (GameObject o in gameComponents) {
             o.SetActive(false);
         }
 
@@ -208,5 +241,39 @@ public class PlayerCanvas {
             return true;
         }
         return false;
+    }
+
+    public void SetStat(int i, int amount) {
+        if (amount > DIAL_MAX_STAT)
+            amount = DIAL_MAX_STAT;
+        else if (amount < 0)
+            amount = 0;
+
+        float dx = 0;
+        float dy = 0;
+        switch (i) {
+            case 0: dx = 1;  dy = 1;  break;
+            case 1: dx = -1; dy = 1;  break;
+            case 2: dx = -1; dy = -1; break;
+            case 3: dx = 1;  dy = -1; break;
+        }
+
+        GameObject statDial = statDials[i];
+        Image dial = statDial.GetComponent<Image>();
+
+        RectTransform rectTransform = dial.GetComponent<RectTransform>();
+
+        float size = DIAL_MIN_SIZE + (amount + 1) * (DIAL_MAX_SIZE - DIAL_MIN_SIZE) / (DIAL_MAX_STAT + 1);
+        rectTransform.sizeDelta = new Vector2(size, size);
+        rectTransform.localScale = new Vector3(1f, 1f, 1f);
+
+        float angle = 90 * i;
+        statDial.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        angle *= Mathf.PI / 180f;
+        Vector2 canvasSize = canvas.GetComponent<RectTransform>().rect.size;
+        float x = -canvasSize.x / 2 + 5 + DIAL_MAX_SIZE + size * dx / 2;
+        float y = -canvasSize.y / 2 + 5 + DIAL_MAX_SIZE + size * dy / 2;
+        rectTransform.localPosition = new Vector3(x, y, 10);
     }
 }
