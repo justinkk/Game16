@@ -13,10 +13,10 @@ public class GameManager : MonoBehaviour {
     float gameTimeFloat = 0;
     int gameTime = 0;
 
-    const int GAME_TIME = 5 * 60;
+    const int GAME_TIME = 3 * 60;
     const int GAME_HELP1_TIME = GAME_TIME - 5;
     const int MINIGAME_WARNING_TIME = 10;
-    const int MINIGAME_TIME = 2 * 60;
+    const int MINIGAME_TIME = 100;
     const int END_TIME = 30;
 
     const string GAME_HELP1 = "Try ramming into each other";
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour {
             // Provide minigame specific updates
             minigameManager.Tick();
         } else if (state == State.Game) {
-            if (gameTime % 3 == 0) {
+            if (Random.value < 0.4) {
                 int index = Random.Range(0, regions.Length-1);
                 BoxCollider2D region = regions[index];
                 if (region != null) {

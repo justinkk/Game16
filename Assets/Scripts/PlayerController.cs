@@ -3,8 +3,8 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-	//Constants
-   private static readonly float[] DEFAULT_STATS = {30, 60, 12.5f, 1.5f}; //Default base stats
+	//StatConstants                     //Speed, Acceleration, Brakes, Boost
+   private static readonly float[] DEFAULT_STATS = {5, 10, 8.5f, 1.5f}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
 	private static readonly float[] BOOST_PER_STAT = {0.05f, 0.08f, 0.1f, 0.2f}; //How much each stat changes per stat level
@@ -370,7 +370,7 @@ public class PlayerController : MonoBehaviour {
 
 				SetPlayerRope (rope, otherPlayer.index);
 				otherPlayer.SetPlayerRope (rope, index);
-				rope.MakeRope (transform, coll.transform, 0.2f, 8, location);
+				rope.MakeRope (transform, coll.transform, 0.1f, 16, location);
 			} else if (attachedPlayerIndex == otherPlayer.index) {
 				didChangeAttachedPlayer = false;
 			}
