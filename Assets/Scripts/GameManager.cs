@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
@@ -149,11 +149,11 @@ public class GameManager : MonoBehaviour {
             state = State.Game;
             startTimer(GAME_TIME);
         }
-        items[0] = Resources.Load<GameObject>("SpeedDown");
+        items[0] = Resources.Load<GameObject>("SpeedUp");
         items[1] = Resources.Load<GameObject>("AccelUp");
-        items[2] = Resources.Load<GameObject>("AccelDown");
-        items[3] = Resources.Load<GameObject>("SpeedUp");
-        items[4] = Resources.Load<GameObject>("TractUp");
+        items[2] = Resources.Load<GameObject>("TractUp");
+        items[3] = Resources.Load<GameObject>("SpeedDown");
+        items[4] = Resources.Load<GameObject>("AccelDown");
         items[5] = Resources.Load<GameObject>("TractDown");
         regions = gameObject.GetComponents<BoxCollider2D>();
     }
@@ -229,6 +229,17 @@ public class GameManager : MonoBehaviour {
         return -1.0f;
     }
 
+    int chooseItemToSpawn(PlayerController player) {
+        int index = 0;
+        int max = player.statLevels[0];
+        for (int i = 1; i < StatConstants.NUM_STATS; i++) {
+            if (player.statLevels[i] > max) {
+                index = i;
+            }
+        }
+        return index;
+    }
+
     public void OnPlayerCollision(PlayerController playerA, PlayerController playerB) {
         if (state == State.Game) {
             if (tireBox != null && playerA.IsBoosting()) {
@@ -240,11 +251,14 @@ public class GameManager : MonoBehaviour {
                         player.ShowMessage(GAME_HELP2, 5f);
                     }
                 }
-            } else if (playerA.IsBoosting()) {
+            } else if (playerA.IsBoosting() && gameTime > (playerB.mostRecentTimeStatStolen + 3)) {
                 if (playerA.DidChangeAttachedPlayer()) {
                     float x = playerB.body.transform.position.x + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
                     float y = playerB.body.transform.position.y + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
-                    spawnRandomItemAtLocation(x, y);
+                    int itemIndex = chooseItemToSpawn(playerB);
+                    playerB.changeStat(itemIndex, false);
+                    Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+                    playerB.mostRecentTimeStatStolen = gameTime;
                 }
             }
         } else if (state == State.Minigame && minigameManager != null) {
