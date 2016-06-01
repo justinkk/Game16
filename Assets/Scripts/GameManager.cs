@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour {
     const int MINIGAME_WARNING_TIME = 10;
     const int MINIGAME_TIME = 100;
     const int END_TIME = 30;
+    const int ITEM_LIFETIME = 60;
+    const int NUM_INITIAL_ITEMS = 20;
 
     const string GAME_HELP1 = "Try ramming into each other";
     const string GAME_HELP2 = "Now explore the amusement park";
@@ -88,7 +90,23 @@ public class GameManager : MonoBehaviour {
 
     void spawnRandomItemAtLocation(float x, float y) {
         int itemIndex = Random.Range(0, items.Length - 1);
-        Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+        Destroy(Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity), ITEM_LIFETIME);
+    }
+
+    void spawnRandomItemAtRandomLocation() {
+        int index = Random.Range(0, regions.Length-1);
+        BoxCollider2D region = regions[index];
+        if (region != null) {
+            float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x / 2f;
+            float y = Random.Range(0, region.size.y) + region.offset.y - region.size.y / 2f;
+            spawnRandomItemAtLocation(x, y);
+        }
+    }
+
+    void loadInitialItems() {
+        for (int i = 0; i < NUM_INITIAL_ITEMS; i++) {
+            spawnRandomItemAtRandomLocation();
+        }
     }
 
     // Called once per second when the game is running.
@@ -104,13 +122,7 @@ public class GameManager : MonoBehaviour {
             minigameManager.Tick();
         } else if (state == State.Game) {
             if (Random.value < 0.4) {
-                int index = Random.Range(0, regions.Length-1);
-                BoxCollider2D region = regions[index];
-                if (region != null) {
-                    float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x / 2f;
-                    float y = Random.Range(0, region.size.y) + region.offset.y - region.size.y / 2f;
-                    spawnRandomItemAtLocation(x, y);
-                }
+                spawnRandomItemAtRandomLocation();
             }
 
             if (gameTime == GAME_HELP1_TIME && tireBox != null) {
@@ -157,6 +169,7 @@ public class GameManager : MonoBehaviour {
         items[4] = Resources.Load<GameObject>("AccelDown");
         items[5] = Resources.Load<GameObject>("TractDown");
         regions = gameObject.GetComponents<BoxCollider2D>();
+        loadInitialItems();
     }
 
     void loadMinigame() {
@@ -258,7 +271,7 @@ public class GameManager : MonoBehaviour {
                     float y = playerB.body.transform.position.y + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
                     int itemIndex = chooseItemToSpawn(playerB);
                     playerB.ChangeStat(itemIndex, false);
-                    Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
+                    Destroy(Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity), ITEM_LIFETIME);
                     playerB.mostRecentTimeStatStolen = gameTime;
                 }
             }
