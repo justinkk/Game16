@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour {
 	//private Animator animator;
 	private float[] baseStats; //Instance variable in case we want to allow multiple vehicles
 	private int[] statLevels;
-	private int mostRecentTimeStatStolen = 0;
+	public int mostRecentTimeStatStolen = 0;
 
 	private bool charging = false;
 	private float chargeStart;
@@ -69,6 +69,10 @@ public class PlayerController : MonoBehaviour {
 	 */
 	public bool IsBoosting() {
 		return boostEnd > Time.time;
+	}
+
+	public int[] GetStatLevels() {
+		return statLevels;
 	}
 
    /**

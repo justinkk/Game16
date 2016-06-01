@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour {
 
     public void CreatePlayer(PlayerController player) {
         players[player.index - 1] = player;
+        player.mostRecentTimeStatStolen = GAME_TIME;
     }
 
     public bool CanJoin() {
@@ -231,9 +232,9 @@ public class GameManager : MonoBehaviour {
 
     int chooseItemToSpawn(PlayerController player) {
         int index = 0;
-        int max = player.statLevels[0];
-        for (int i = 1; i < StatConstants.NUM_STATS; i++) {
-            if (player.statLevels[i] > max) {
+        int max = player.GetStatLevels()[0];
+        for (int i = 1; i < StatConstants.NUM_STATS - 1; i++) {
+            if (player.GetStatLevels()[i] > max) {
                 index = i;
             }
         }
@@ -251,12 +252,12 @@ public class GameManager : MonoBehaviour {
                         player.ShowMessage(GAME_HELP2, 5f);
                     }
                 }
-            } else if (playerA.IsBoosting() && gameTime > (playerB.mostRecentTimeStatStolen + 3)) {
+            } else if (playerA.IsBoosting() && gameTime < (playerB.mostRecentTimeStatStolen - 5)) {
                 if (playerA.DidChangeAttachedPlayer()) {
                     float x = playerB.body.transform.position.x + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
                     float y = playerB.body.transform.position.y + Random.Range(3, 5) * randomNegativeOneOrPositiveOne();
                     int itemIndex = chooseItemToSpawn(playerB);
-                    playerB.changeStat(itemIndex, false);
+                    playerB.ChangeStat(itemIndex, false);
                     Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity);
                     playerB.mostRecentTimeStatStolen = gameTime;
                 }
