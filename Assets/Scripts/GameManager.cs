@@ -121,8 +121,10 @@ public class GameManager : MonoBehaviour {
             // Provide minigame specific updates
             minigameManager.Tick();
         } else if (state == State.Game) {
-            if (Random.value < 0.4) {
-                spawnRandomItemAtRandomLocation();
+            for (int i = 0; i < 3; i++) {
+                if (Random.value < 0.4) {
+                    spawnRandomItemAtRandomLocation();
+                }
             }
 
             if (gameTime == GAME_HELP1_TIME && tireBox != null) {
