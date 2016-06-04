@@ -4,10 +4,10 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//StatConstants                     //Speed, Acceleration, Brakes, Boost
-   private static readonly float[] DEFAULT_STATS = {8, 16, 5f, 1.5f}; //Default base stats
+   private static readonly float[] DEFAULT_STATS = {8, 16, 5f, 0.5f}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
-	private static readonly float[] BOOST_PER_STAT = {0.5f, 0.12f, 0.2f, 0.05f}; //How much each stat changes per stat level
+	private static readonly float[] BOOST_PER_STAT = {0.5f, 0.12f, 0.2f, 0.1f}; //How much each stat changes per stat level
   private static readonly float[] ROPELESS_PENALTY = {0.6f, 0.5f, 0.5f, 1.0f}; //How much each stat is punished for being ropeless
    private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
