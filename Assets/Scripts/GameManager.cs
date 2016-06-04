@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance = null;
 
     public PlayerController[] players = new PlayerController[4];
-    GameObject[] items = new GameObject[6];
+    GameObject[] items = new GameObject[8];
     BoxCollider2D[] regions = new BoxCollider2D[7];
 
     bool timerEnabled = false;
@@ -167,9 +167,11 @@ public class GameManager : MonoBehaviour {
         items[0] = Resources.Load<GameObject>("SpeedUp");
         items[1] = Resources.Load<GameObject>("AccelUp");
         items[2] = Resources.Load<GameObject>("TractUp");
-        items[3] = Resources.Load<GameObject>("SpeedDown");
-        items[4] = Resources.Load<GameObject>("AccelDown");
-        items[5] = Resources.Load<GameObject>("TractDown");
+        items[3] = Resources.Load<GameObject>("BoostUp");
+        items[4] = Resources.Load<GameObject>("SpeedDown");
+        items[5] = Resources.Load<GameObject>("AccelDown");
+        items[6] = Resources.Load<GameObject>("TractDown");
+        items[7] = Resources.Load<GameObject>("BoostDown");
         regions = gameObject.GetComponents<BoxCollider2D>();
         loadInitialItems();
     }
