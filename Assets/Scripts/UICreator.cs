@@ -27,7 +27,9 @@ public class UICreator : MonoBehaviour {
 	}
 
 	public PlayerCanvas addPlayerCanvas(PlayerController player) {
-        return new PlayerCanvas(gameObject.transform, player);
+        PlayerCanvas playerCanvas =  new PlayerCanvas(gameObject.transform, player);
+        refreshBorders();
+        return playerCanvas;
     }
 
     void addBorders(float thickness) {
