@@ -23,7 +23,20 @@ public class RollerCoasterManager : MonoBehaviour
 		rollerCoasterCarObject = Instantiate (rollerCoasterCar);
 		rollerCoasterCarObject.transform.SetParent (gameObject.transform);
 		rollerCoasterCarObject.transform.localPosition = new Vector3 (-25f, -15f);
-//		rollerCoasterCarObject.GetComponent<Rigidbody2D> ().AddForce(new Vector2(0.1f, 0));
+
+
+		rollerCoasterCarObject = Instantiate (rollerCoasterCar);
+		rollerCoasterCarObject.transform.SetParent (gameObject.transform);
+		rollerCoasterCarObject.transform.localPosition = new Vector3 (-15f, -15f);
+
+
+		rollerCoasterCarObject = Instantiate (rollerCoasterCar);
+		rollerCoasterCarObject.transform.SetParent (gameObject.transform);
+		rollerCoasterCarObject.transform.localPosition = new Vector3 (10f, -15f);
+
+		rollerCoasterCarObject = Instantiate (rollerCoasterCar);
+		rollerCoasterCarObject.transform.SetParent (gameObject.transform);
+		rollerCoasterCarObject.transform.localPosition = new Vector3 (20f, -15f);
 	}
 
 	private void createTrack() {
