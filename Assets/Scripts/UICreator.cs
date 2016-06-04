@@ -27,7 +27,7 @@ public class UICreator : MonoBehaviour {
 	}
 
 	public PlayerCanvas addPlayerCanvas(PlayerController player) {
-        PlayerCanvas playerCanvas =  new PlayerCanvas(gameObject.transform, player);
+        PlayerCanvas playerCanvas = new PlayerCanvas(gameObject.transform, player);
         refreshBorders();
         return playerCanvas;
     }
@@ -82,9 +82,12 @@ public class UICreator : MonoBehaviour {
     }
 
     public void refreshBorders() {
-        hImage.transform.SetAsLastSibling();
-        vImage.transform.SetAsLastSibling();
-        timer.transform.SetAsLastSibling();
+        if (hImage != null)
+            hImage.transform.SetAsLastSibling();
+        if (vImage != null)
+            vImage.transform.SetAsLastSibling();
+        if (timer != null)
+            timer.transform.SetAsLastSibling();
     }
 	
 	// Update is called once per frame
