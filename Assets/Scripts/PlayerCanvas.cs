@@ -97,7 +97,7 @@ public class PlayerCanvas {
             Image dial = statDial.AddComponent<Image>();
             dial.sprite = Resources.Load<Sprite>("stat_dial");
             switch (i) {
-                case 0: dial.color = Color.black;  break;
+                case 0: dial.color = Color.blue;   break;
                 case 1: dial.color = Color.red;    break;
                 case 2: dial.color = Color.yellow; break;
                 case 3: dial.color = Color.green;  break;

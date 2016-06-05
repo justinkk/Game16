@@ -40,7 +40,7 @@ public abstract class MinigameManager : MonoBehaviour {
 
     public void UpdateScore(int playerIndex, float value) {
         playerScores[playerIndex - 1] += value;
-        GameManager.instance.players[playerIndex - 1].ShowMessage("" + playerScores[playerIndex - 1]);
+        GameManager.instance.players[playerIndex - 1].ShowMessage("" + playerScores[playerIndex - 1], 120);
     }
 
     public bool[] GetWinners() {
