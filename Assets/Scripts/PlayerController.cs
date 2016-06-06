@@ -4,11 +4,11 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
 	//StatConstants                     //Speed, Acceleration, Brakes, Boost
-   private static readonly float[] DEFAULT_STATS = {8, 16, 5f, 0.5f}; //Default base stats
+   private static readonly float[] DEFAULT_STATS = {8, 16, 1.5f, 0.5f}; //Default base stats
 	public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
 	public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
-	private static readonly float[] BOOST_PER_STAT = {0.5f, 0.12f, 0.2f, 0.1f}; //How much each stat changes per stat level
-  private static readonly float[] ROPELESS_PENALTY = {0.6f, 0.5f, 0.5f, 1.0f}; //How much each stat is punished for being ropeless
+	private static readonly float[] BOOST_PER_STAT = {0.4f, 0.12f, 0.15f, 0.09f}; //How much each stat changes per stat level
+  private static readonly float[] ROPELESS_PENALTY = {0.6f, 0.5f, 0.8f, 1.0f}; //How much each stat is punished for being ropeless
    private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
       new Color(1f, 1.0f, 0.6f, 1f),
@@ -213,6 +213,27 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+  /**
+   * Sets whether the charge indicators are visible
+   */
+  private void SetChargeIndicatorVisibility(bool visible) {
+    transform.Find("ChargeMax").gameObject.GetComponent<SpriteRenderer>().enabled = visible;
+    transform.Find("ChargeLevel").gameObject.GetComponent<SpriteRenderer>().enabled = visible;
+  }
+
+  /**
+   * Call while charging.
+   * Sets the charge indicator to the appropriate size
+   */
+  private void ResizeChargeIndicator() {
+   GameObject chargeLevel = transform.Find("ChargeLevel").gameObject;
+   float planarScale = transform.Find("ChargeMax").localScale.x * ChargePercent();
+   Vector3 newScale = chargeLevel.transform.localScale;
+   newScale.x = planarScale;
+   newScale.y = planarScale;
+   chargeLevel.transform.localScale = newScale;
+  }
+
 	/**
 	 * Tell the character to charge
 	 */
@@ -220,6 +241,8 @@ public class PlayerController : MonoBehaviour {
       //canvas.ShowMessage("CHARGING"); // probably remove this later
 		charging = true;
 		chargeStart = Time.time;
+
+    SetChargeIndicatorVisibility(true);
 	}
 
 	/**
@@ -243,10 +266,12 @@ public class PlayerController : MonoBehaviour {
 		boostEnd = Time.time + boostPercent * BOOST_TO_BOOST_TIME;
 		charging = false;
 		exhaustParticles.emissionRate = 0;
-
+    SetChargeIndicatorVisibility(false);
 	}
 
+  //Called after everything is initialized
    void Awake() {
+      SetChargeIndicatorVisibility(false);
       DontDestroyOnLoad(gameObject);
    }
 
@@ -273,32 +298,9 @@ public class PlayerController : MonoBehaviour {
 		statLevels = new int[StatConstants.NUM_STATS];
 		//Initiate base stats
 		baseStats = (float[])DEFAULT_STATS.Clone();
-    
-    //Start out with ropes attached
-//    if (index == 1 || index == 3) {
-//      GameObject ropePrefab = Resources.Load("Rope") as GameObject;
-//      PlayerController otherPlayer;
-//      if (index == 1) {
-//        otherPlayer = GameObject.Find("Player2").GetComponent<PlayerController>();
-//      } else {
-//        otherPlayer = GameObject.Find("Player4").GetComponent<PlayerController>();
-//      }
-//      Vector3 location = (transform.position + otherPlayer.transform.position) / 2;
-//      RopeController rope = Instantiate(ropePrefab).GetComponent<RopeController>();
-//
-//      SetPlayerRope(rope, index + 1);
-//      otherPlayer.SetPlayerRope(rope, index);
-//      
-//      rope.MakeRope(transform, otherPlayer.transform, 0.2f, 8, location);
-//    }
-//    
 
-        GameManager.instance.CreatePlayer(this);
-
-        // FOR TESTING ONLY: (otherwise StartPlaying() is called by button press)
-        //if (index < 4)
-        //    StartPlaying();
-    }
+    GameManager.instance.CreatePlayer(this);
+  }
 
     void StartPlaying() {
       isPlaying = true;
@@ -343,13 +345,14 @@ public class PlayerController : MonoBehaviour {
                 if (GameManager.instance.CanJoin()) {
                     StartPlaying();
                 }
-         } else if (Time.time > boostEnd) {
+         } else { //if (Time.time > boostEnd) {
             Charge();
          }
 		}
 
       if (charging) {
          exhaustParticles.emissionRate = MAX_EXHAUST * ChargePercent();
+         ResizeChargeIndicator();
       }
 
 		if ((index == 1 && Input.GetKeyUp("space")) || Input.GetKeyUp(KeyCodes.GetA(index)) || Input.GetKeyUp(KeyCodes.GetZ(index))
