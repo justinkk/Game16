@@ -33,6 +33,12 @@ public class PlayerController : MonoBehaviour {
    public new Camera camera;
    public Rigidbody2D body;
 
+    // Audio
+    public CollisionSound collisionSound;
+    public CollisionSound powerupSound;
+    public AudioClip powerupClip;
+    public AudioClip powerdownClip;
+
    private RopeController playerRope = null;
    private bool didChangeAttachedPlayer = false;
    private int attachedPlayerIndex = -1;
@@ -398,6 +404,10 @@ public class PlayerController : MonoBehaviour {
 			}
 
 		}
+
+        if (coll.gameObject.tag != "Powerup") {
+            collisionSound.PlaySound();
+        }
 	}
 
 	/*
@@ -413,6 +423,8 @@ public class PlayerController : MonoBehaviour {
 
         string sign = augmenting ? "+" : "-";
         ShowMessage(sign + StatConstants.NAMES[stat]);
+
+        powerupSound.PlaySound(augmenting ? powerupClip : powerdownClip);
 	}
 
     public void ShowMessage(string msg, float duration = 3f) {
