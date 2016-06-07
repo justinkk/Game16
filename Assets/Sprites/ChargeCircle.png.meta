@@ -1,0 +1,83 @@
+fileFormatVersion: 2
+guid: 02248285d7c00489589453b2d8add349
+timeCreated: 1465069371
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: ChargeCircle_0
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: ChargeCircle_0
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 8
+        width: 366
+        height: 368
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -65, y: 184}
+        - {x: -133, y: 164}
+        - {x: -183, y: 157}
+        - {x: -183, y: -184}
+        - {x: 161, y: -184}
+        - {x: 183, y: -125}
+        - {x: 183, y: 115}
+        - {x: 76, y: 184}
+      - - {x: -48, y: -159}
+        - {x: -122, y: -113}
+        - {x: -113, y: 122}
+        - {x: 122, y: 113}
+        - {x: 160, y: -44}
+        - {x: 113, y: -122}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
