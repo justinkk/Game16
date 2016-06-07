@@ -10,14 +10,13 @@ public class BackgroundMusic : MonoBehaviour {
     bool fadeIn = false;
     int fadeDuration = 4;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         music.Play();
         music.loop = true;
     }
 
-    public void ChangeMusic(AudioClip clip)
-    {
+    public void ChangeMusic(AudioClip clip) {
         fadeOut = true;
         StartCoroutine(WaitAndSetMusic(clip));
     }
@@ -29,30 +28,25 @@ public class BackgroundMusic : MonoBehaviour {
         fadeIn = true;
     }
 
-    IEnumerator WaitAndSetMusic(AudioClip clip)
-    {
+    IEnumerator WaitAndSetMusic(AudioClip clip) {
         yield return new WaitForSeconds(fadeDuration);
         SetMusic(clip);
     }
 
-	// Update is called once per frame
-	void Update () {
-        if (fadeOut)
-        {
-            music.volume -= Time.deltaTime/fadeDuration;
+    // Update is called once per frame
+    void Update() {
+        if (fadeOut) {
+            music.volume -= Time.deltaTime / fadeDuration;
 
-            if (music.volume <= 0.00f)
-            {
+            if (music.volume <= 0.00f) {
                 fadeOut = false;
             }
-        } else if (fadeIn)
-        {
-            music.volume += Time.deltaTime/fadeDuration;
+        } else if (fadeIn) {
+            music.volume += Time.deltaTime / fadeDuration;
 
-            if (music.volume >= 1.0f)
-            {
+            if (music.volume >= 1.0f) {
                 fadeIn = false;
             }
         }
-	}
+    }
 }

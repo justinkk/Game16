@@ -15,7 +15,7 @@ public abstract class MinigameManager : MonoBehaviour {
     }
 
     // Use this for initialization
-    virtual public void Start () {
+    virtual public void Start() {
         for (int i = 0; i < playerSpawnpoints.Length; ++i) {
             PlayerController player = GameManager.instance.players[i];
             if (player != null && player.isPlaying) {
@@ -28,9 +28,9 @@ public abstract class MinigameManager : MonoBehaviour {
             Destroy(playerSpawnpoints[i]);
         }
     }
-	
-	// Update is called once per frame
-	virtual public void Update () { }
+
+    // Update is called once per frame
+    virtual public void Update() { }
 
     virtual public void Tick() { }
 

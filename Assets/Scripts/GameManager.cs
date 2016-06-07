@@ -42,17 +42,16 @@ public class GameManager : MonoBehaviour {
     int minigameIndex = 0;
     MinigameManager minigameManager = null;
 
-    void Awake()
-    {
+    void Awake() {
         if (instance == null)
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
-        
+
         DontDestroyOnLoad(gameObject);
     }
-    
-    void Start () {
+
+    void Start() {
 
     }
 
@@ -94,7 +93,7 @@ public class GameManager : MonoBehaviour {
     }
 
     void spawnRandomItemAtRandomLocation() {
-        int index = Random.Range(0, regions.Length-1);
+        int index = Random.Range(0, regions.Length - 1);
         BoxCollider2D region = regions[index];
         if (region != null) {
             float x = Random.Range(0, region.size.x) + region.offset.x - region.size.x / 2f;
@@ -133,8 +132,7 @@ public class GameManager : MonoBehaviour {
                         player.ShowMessage(GAME_HELP1, 5f);
                     }
                 }
-            }
-            else if (gameTime == MINIGAME_WARNING_TIME) {
+            } else if (gameTime == MINIGAME_WARNING_TIME) {
                 minigameIndex = (new System.Random()).Next(MINIGAME_NAMES.Length);
                 foreach (PlayerController player in players) {
                     if (player.isPlaying) {
@@ -195,7 +193,7 @@ public class GameManager : MonoBehaviour {
     public void startMinigame(MinigameManager manager) {
         minigameManager = manager;
         startTimer(MINIGAME_TIME);
-        
+
         foreach (PlayerController player in players) {
             if (player != null && player.isPlaying) {
                 player.ShowMessage(minigameManager.GetInstruction(), 5f);
@@ -263,7 +261,7 @@ public class GameManager : MonoBehaviour {
             if (tireBox != null && playerA.IsBoosting()) {
                 Destroy(tireBox);
                 tireBox = null;
-                
+
                 foreach (PlayerController player in players) {
                     if (player.isPlaying) {
                         player.ShowMessage(GAME_HELP2, 5f);

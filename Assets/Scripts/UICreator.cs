@@ -21,12 +21,12 @@ public class UICreator : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         addBorders(0.05f);
         addTimer();
-	}
+    }
 
-	public PlayerCanvas addPlayerCanvas(PlayerController player) {
+    public PlayerCanvas addPlayerCanvas(PlayerController player) {
         PlayerCanvas playerCanvas = new PlayerCanvas(gameObject.transform, player);
         refreshBorders();
         return playerCanvas;
@@ -89,11 +89,11 @@ public class UICreator : MonoBehaviour {
         if (timer != null)
             timer.transform.SetAsLastSibling();
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    // Update is called once per frame
+    void Update() {
+
+    }
 
     public void Remove() {
         Destroy(gameObject);

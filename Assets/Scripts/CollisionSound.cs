@@ -12,12 +12,10 @@ public class CollisionSound : MonoBehaviour {
     bool fadeOut = false;
 
     // Use this for initialization
-    void Start()
-    {
+    void Start() {
     }
 
-    public void PlaySound()
-    {
+    public void PlaySound() {
         sound.Stop();
         sound.volume = 1f;
         sound.Play();
@@ -33,14 +31,11 @@ public class CollisionSound : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (fadeOut)
-        {
-            sound.volume -= 2*Time.deltaTime;
+    void Update() {
+        if (fadeOut) {
+            sound.volume -= 2 * Time.deltaTime;
 
-            if (sound.volume <= 0.00f)
-            {
+            if (sound.volume <= 0.00f) {
                 fadeOut = false;
             }
         }

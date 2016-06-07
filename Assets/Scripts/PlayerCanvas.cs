@@ -97,10 +97,10 @@ public class PlayerCanvas {
             Image dial = statDial.AddComponent<Image>();
             dial.sprite = Resources.Load<Sprite>("stat_dial");
             switch (i) {
-                case 0: dial.color = Color.blue;   break;
-                case 1: dial.color = Color.red;    break;
+                case 0: dial.color = Color.blue; break;
+                case 1: dial.color = Color.red; break;
                 case 2: dial.color = Color.yellow; break;
-                case 3: dial.color = Color.green;  break;
+                case 3: dial.color = Color.green; break;
             }
             AddObject(dial, canvas.GetComponent<RectTransform>());
 
@@ -183,7 +183,7 @@ public class PlayerCanvas {
 
     void DrawPlayerArrows() {
         Vector3 position = player.transform.position;
-        
+
         for (int i = 0; i < 4; ++i) {
             if (i == player.index - 1)
                 continue;
@@ -198,7 +198,7 @@ public class PlayerCanvas {
                     arrow.sprite = Resources.Load<Sprite>("player_arrow");
                     arrow.color = otherPlayer.color;
                     AddObject(arrow, canvas.GetComponent<RectTransform>());
-                    
+
                     arrow.transform.SetParent(canvas.GetComponent<RectTransform>());
                     RectTransform rectTransform = arrow.GetComponent<RectTransform>();
                     rectTransform.sizeDelta = new Vector2(ARROW_SIZE, ARROW_SIZE);
@@ -252,10 +252,10 @@ public class PlayerCanvas {
         float dx = 0;
         float dy = 0;
         switch (i) {
-            case 0: dx = 1;  dy = 1;  break;
-            case 1: dx = -1; dy = 1;  break;
+            case 0: dx = 1; dy = 1; break;
+            case 1: dx = -1; dy = 1; break;
             case 2: dx = -1; dy = -1; break;
-            case 3: dx = 1;  dy = -1; break;
+            case 3: dx = 1; dy = -1; break;
         }
 
         GameObject statDial = statDials[i];
