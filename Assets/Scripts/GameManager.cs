@@ -91,10 +91,10 @@ public class GameManager : MonoBehaviour {
         //Spawn items with 2:1 positive:negative ratio
         int rand = Random.Range(0, items.Length * 3 / 2);
         int index = 0;
-        if (rand < items.Length - 1) {
+        if (rand < items.Length) {
             index = rand / 2;
         } else {
-            index = rand - (items.Length - 1) / 2;
+            index = rand - (items.Length / 2);
         }
         //Random.Range is inclusive, so need to account for chance that index = items.Length
         if (index > items.Length - 1) {
