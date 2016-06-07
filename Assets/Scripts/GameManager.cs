@@ -88,8 +88,19 @@ public class GameManager : MonoBehaviour {
     }
 
     void spawnRandomItemAtLocation(float x, float y) {
-        int itemIndex = Random.Range(0, items.Length - 1);
-        Destroy(Instantiate(items[itemIndex], new Vector2(x, y), Quaternion.identity), ITEM_LIFETIME);
+        //Spawn items with 2:1 positive:negative ratio
+        int rand = Random.Range(0, items.Length * 3 / 2);
+        int index = 0;
+        if (rand < items.Length - 1) {
+            index = rand / 2;
+        } else {
+            index = rand - (items.Length - 1) / 2;
+        }
+        //Random.Range is inclusive, so need to account for chance that index = items.Length
+        if (index > items.Length - 1) {
+            index = items.Length - 1;
+        }
+        Destroy(Instantiate(items[index], new Vector2(x, y), Quaternion.identity), ITEM_LIFETIME);
     }
 
     void spawnRandomItemAtRandomLocation() {
