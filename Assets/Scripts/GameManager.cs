@@ -207,6 +207,8 @@ public class GameManager : MonoBehaviour {
 
         foreach (PlayerController player in players) {
             if (player != null && player.isPlaying) {
+                //Reset score
+                manager.UpdateScore(player.index, 0);
                 player.ShowMessage(minigameManager.GetInstruction(), 5f);
             }
         }
