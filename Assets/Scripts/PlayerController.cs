@@ -4,11 +4,11 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
     //StatConstants                     //Speed, Acceleration, Brakes, Boost
-    private static readonly float[] DEFAULT_STATS = { 8, 16, 1.5f, 0.5f }; //Default base stats
+    private static readonly float[] DEFAULT_STATS = { 8, 14, 1.6f, 0.5f }; //Default base stats
     public const float INPUT_THRESHOLD_LOW = 0.1f; //In deadzone if magnitude < this threshold
     public const float VELOCITY_THRESHOLD_LOW = 0.3f; //In deadzone if magnitude < this threshold
-    private static readonly float[] BOOST_PER_STAT = { 0.4f, 0.12f, 0.15f, 0.09f }; //How much each stat changes per stat level
-    private static readonly float[] ROPELESS_PENALTY = { 0.6f, 0.5f, 0.8f, 1.0f }; //How much each stat is punished for being ropeless
+    private static readonly float[] BOOST_PER_STAT = { 0.35f, 1.2f, 0.15f, 0.15f }; //How much each stat changes per stat level
+    private static readonly float[] ROPELESS_PENALTY = { 0.6f, 0.5f, 0.9f, 1.0f }; //How much each stat is punished for being ropeless
     private static readonly Color[] COLORS = {
       new Color(1f, 0.6f, 0.6f, 1f),
       new Color(1f, 1.0f, 0.6f, 1f),
